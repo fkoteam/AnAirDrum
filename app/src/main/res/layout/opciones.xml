@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Opciones">
+
+
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/tcp_udp"
+        android:layout_above="@id/puerto"
+        >
+
+        <RadioButton
+            android:id="@+id/tcp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TCP"
+            android:onClick="checkButton"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/udp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UDP"
+            android:onClick="checkButton"/>
+
+    </RadioGroup>
+
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/cliente_servidor"
+        android:layout_above="@id/tcp_udp"
+        >
+
+        <RadioButton
+            android:id="@+id/cliente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cliente"
+            android:onClick="checkButton"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/servidor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Servidor"
+            android:onClick="checkButton"/>
+
+
+
+
+    </RadioGroup>
+
+
+    <TextView
+        android:id="@+id/txt_puerto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Puerto"
+        android:layout_centerInParent="true"
+        android:layout_above="@id/txt_ip_servidor"
+
+
+        />
+    <EditText
+        android:id="@+id/puerto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:hint="Puerto"
+        android:layout_toRightOf="@+id/txt_puerto"
+        android:inputType="number"
+        android:text="7001"
+        android:layout_centerInParent="true"
+        android:layout_above="@id/txt_ip_servidor"
+        />
+
+
+    <TextView
+        android:id="@+id/txt_ip_servidor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ip Servidor"
+        android:layout_centerInParent="true"
+
+        />
+    <EditText
+        android:id="@+id/ip_servidor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:hint="Ip Servidor"
+        android:layout_toRightOf="@+id/txt_ip_servidor"
+        android:inputType="number"
+        android:text="192.168.1."
+        android:digits="0123456789."
+        android:layout_centerInParent="true"
+        />
+
+    <TextView
+        android:id="@+id/txt_ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0º"
+        android:textSize="30sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+
+        />
+
+</RelativeLayout>

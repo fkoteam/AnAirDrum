@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:keepScreenOn="true">
+
+    <TextView
+        android:id="@+id/txt_progreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:text="1"
+        android:textSize="30sp"
+        android:layout_above="@id/seekBar"/>
+    <TextView
+        android:id="@+id/txt_mAzimuth"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0º"
+        android:textSize="30sp"
+        android:layout_centerHorizontal="true"
+        />
+
+
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/radioGroup"
+        android:layout_above="@id/txt_progreso"
+        >
+
+        <RadioButton
+            android:id="@+id/mano_der"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mano derecha"
+            android:onClick="checkButton"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/mano_izq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mano izquierda"
+            android:onClick="checkButton"/>
+
+        <RadioButton
+            android:id="@+id/pie_der"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pie derecho"
+            android:onClick="checkButton"/>
+
+    </RadioGroup>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:max="29"
+        android:progress="0" />
+
+    <Button
+        android:id="@+id/pedal"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/volver"
+        android:layout_centerHorizontal="true"
+        android:soundEffectsEnabled="false"
+        android:text="pedal"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/volver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="volver"
+        android:visibility="gone" />
+
+
+</RelativeLayout>
