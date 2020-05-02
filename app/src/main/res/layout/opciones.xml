@@ -5,16 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Opciones"
-    android:keepScreenOn="true">
+    android:paddingLeft="30dp"
+    android:layout_marginTop="50dp"
+    android:keepScreenOn="true"
+    >
 
 
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:id="@+id/offline_online"
-        android:layout_above="@id/puerto"
         >
 
         <RadioButton
@@ -38,9 +39,9 @@
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:id="@+id/cliente_servidor"
-        android:layout_above="@id/offline_online"
+        android:layout_below="@+id/offline_online"
+        android:layout_marginVertical="10dp"
         >
 
         <RadioButton
@@ -69,9 +70,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Puerto"
-        android:layout_centerInParent="true"
-        android:layout_above="@id/txt_ip_servidor"
-
+        android:layout_below="@+id/cliente_servidor"
+        android:layout_marginTop="10dp"
+        android:paddingRight="30dp"
 
         />
     <EditText
@@ -84,7 +85,7 @@
         android:inputType="number"
         android:text="7001"
         android:layout_centerInParent="true"
-        android:layout_above="@id/txt_ip_servidor"
+        android:layout_below="@+id/cliente_servidor"
         />
 
 
@@ -93,20 +94,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ip Servidor"
-        android:layout_centerInParent="true"
+        android:layout_below="@+id/txt_puerto"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="10dp"
+
 
         />
+
     <EditText
         android:id="@+id/ip_servidor"
-        android:layout_width="wrap_content"
+        android:layout_width="132dp"
         android:layout_height="wrap_content"
-        android:ems="5"
-        android:hint="Ip Servidor"
+        android:layout_below="@id/puerto"
         android:layout_toRightOf="@+id/txt_ip_servidor"
+        android:digits="0123456789."
+        android:hint="Ip Servidor"
         android:inputType="number"
         android:text="192.168.1."
-        android:digits="0123456789."
-        android:layout_centerInParent="true"
+
+
         />
 
     <TextView
@@ -114,9 +120,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0º"
-        android:textSize="30sp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
+        android:textSize="20sp"
+        android:layout_below="@id/txt_ip_servidor"
+        android:layout_marginTop="15dp"
 
         />
 

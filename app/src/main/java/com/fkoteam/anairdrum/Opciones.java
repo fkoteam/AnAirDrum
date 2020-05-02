@@ -36,6 +36,7 @@ public class Opciones extends AppCompatActivity {
 
 
         String ip = getLocalIpAddress();
+        visibilidad();
 
         ((TextView) findViewById(R.id.txt_ip)).setText("Ip de este dispositivo: " + ip);
 
@@ -109,16 +110,49 @@ public class Opciones extends AppCompatActivity {
         if (radioGroupCliente.getCheckedRadioButtonId() == findViewById(R.id.cliente).getId()) {
             cliente = true;
         } else cliente = false;
+        visibilidad();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        visibilidad();
         ipServidorEdit.setText(ipServidor);
         puertoEdit.setText(""+puerto);
         if(!cliente)
             radioGroupCliente.check(R.id.servidor);
         if(!offline)
             radioGroupOffline.check(R.id.online);
+    }
+
+    private void visibilidad()
+    {
+        if(offline)
+        {
+            findViewById(R.id.cliente).setVisibility(View.GONE);
+            findViewById(R.id.servidor).setVisibility(View.GONE);
+            findViewById(R.id.puerto).setVisibility(View.GONE);
+            findViewById(R.id.txt_puerto).setVisibility(View.GONE);
+            findViewById(R.id.ip_servidor).setVisibility(View.GONE);
+            findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
+
+        }
+        else
+        {
+            findViewById(R.id.cliente).setVisibility(View.VISIBLE);
+            findViewById(R.id.servidor).setVisibility(View.VISIBLE);
+            findViewById(R.id.puerto).setVisibility(View.VISIBLE);
+            findViewById(R.id.txt_puerto).setVisibility(View.VISIBLE);
+            if(cliente)
+            {
+                findViewById(R.id.ip_servidor).setVisibility(View.VISIBLE);
+                findViewById(R.id.txt_ip_servidor).setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                findViewById(R.id.ip_servidor).setVisibility(View.GONE);
+                findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
+            }
+        }
     }
 }
