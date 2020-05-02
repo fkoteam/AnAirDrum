@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Opciones">
+    tools:context=".Opciones"
+    android:keepScreenOn="true">
 
 
 
@@ -12,23 +13,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:id="@+id/tcp_udp"
+        android:id="@+id/offline_online"
         android:layout_above="@id/puerto"
         >
 
         <RadioButton
-            android:id="@+id/tcp"
+            android:id="@+id/offline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TCP"
+            android:text="Offline"
             android:onClick="checkButton"
             android:checked="true"/>
 
         <RadioButton
-            android:id="@+id/udp"
+            android:id="@+id/online"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="UDP"
+            android:text="Online"
             android:onClick="checkButton"/>
 
     </RadioGroup>
@@ -39,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:id="@+id/cliente_servidor"
-        android:layout_above="@id/tcp_udp"
+        android:layout_above="@id/offline_online"
         >
 
         <RadioButton

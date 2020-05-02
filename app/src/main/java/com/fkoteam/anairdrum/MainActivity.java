@@ -26,14 +26,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fkoteam.anairdrum.udp2.Client;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener  {
@@ -43,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView txt_mAzimuth;
     RadioGroup radioGroup;
     RadioButton radioButton;
+    com.fkoteam.anairdrum.udp2.Server chatserver;
+    DatagramPacket packet_izq1,packet_izq2,packet_der1,packet_der2,packet_pie_der;
+
+
     MediaPlayer izq1_1,izq1_2,izq1_3,izq2_1,izq2_2,izq2_3,der1_1,der1_2,der1_3,der2_1,der2_2,der2_3,pie_der1,pie_der2,pie_der3;
 
     Long timestamp_uno,timestamp_dos;
@@ -76,13 +86,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     SensorEventListener sensorEventListener;
     int whip = 0;
     int whip2 = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-
+        construirDatagram();
 
         radioGroup = findViewById(R.id.radioGroup);
         izq1_1 = MediaPlayer.create(this, R.raw.izq1);
@@ -105,13 +116,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                if(!Opciones.cliente)
+                if(!Opciones.cliente || Opciones.offline)
                     pie_der();
                 else
-                    if(!Opciones.tcp)
-                        new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("pie_der");
+                    /*if(!Opciones.tcp) {
+                       // Toast.makeText(getApplicationContext(),Opciones.ipServidor+ ":"+Opciones.puerto,Toast.LENGTH_SHORT).show();
+                        new com.fkoteam.anairdrum.udp.Client(getApplicationContext(), Opciones.ipServidor, Opciones.puerto).send("pie_der");
+                    }
                     else
-                        new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);
+                        new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+                    new Client (packet_pie_der).start();
+
+
+
 
 
 
@@ -186,7 +203,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         };*/
         start();
-        new AsyncTask<Void, Void, Void>() {
+        try {
+            if(!Opciones.cliente && chatserver==null &&  !Opciones.offline)
+
+             {
+                chatserver = new com.fkoteam.anairdrum.udp2.Server(getApplicationContext(),Opciones.puerto);
+                chatserver.start();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 //TCP client and server (Client will automatically send welcome message after setup and server will respond)
@@ -202,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     new com.fkoteam.anairdrum.udp.Server(getApplicationContext(),"localhost", Opciones.puerto);
                 return null;
             }
-        }.execute();
+        }.execute();*/
     }
 
     private void pie_der(){
@@ -220,61 +248,87 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
     private void izq1(){
+        if(!Opciones.cliente || Opciones.offline) {
+            if (izq1_1.isPlaying()) {
+                if (izq1_2.isPlaying())
+                    izq1_3.start();
+                else
+                    izq1_2.start();
+            } else
+                izq1_1.start();
 
-        if(izq1_1.isPlaying())
-        {
-            if(izq1_2.isPlaying())
-                izq1_3.start();
-            else
-                izq1_2.start();
         }
         else
-            izq1_1.start();
+       /* if(!Opciones.tcp)
+            new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("izq1");
+        else
+            new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+
+            new Client (packet_izq1).start();
 
 
     }
 
-    private void izq2(){
-
-        if(izq2_1.isPlaying())
-        {
-            if(izq2_2.isPlaying())
-                izq2_3.start();
-            else
-                izq2_2.start();
+    private void izq2() {
+        if (!Opciones.cliente || Opciones.offline) {
+            if (izq2_1.isPlaying()) {
+                if (izq2_2.isPlaying())
+                    izq2_3.start();
+                else
+                    izq2_2.start();
+            } else
+                izq2_1.start();
         }
         else
-            izq2_1.start();
-
+           /* if(!Opciones.tcp)
+            new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("izq2");
+        else
+                new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+        new Client (packet_izq2).start();
 
     }
 
-    private void der1(){
 
-        if(der1_1.isPlaying())
-        {
-            if(der1_2.isPlaying())
+
+    private void der1() {
+        if(!Opciones.cliente || Opciones.offline) {
+        if (der1_1.isPlaying()) {
+            if (der1_2.isPlaying())
                 der1_3.start();
             else
                 der1_2.start();
-        }
-        else
+        } else
             der1_1.start();
+    }
+        else
+        /*if(!Opciones.tcp)
+        new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("der1");
+        else
+        new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+            new Client (packet_der1).start();
+
 
 
     }
 
     private void der2(){
-
+        if(!Opciones.cliente || Opciones.offline) {
         if(der2_1.isPlaying())
         {
-            if(der2_2.isPlaying())
-                der2_3.start();
-            else
-                der2_2.start();
+        if(der2_2.isPlaying())
+        der2_3.start();
+        else
+        der2_2.start();
         }
         else
-            der2_1.start();
+        der2_1.start();
+        }  else
+        /*if(!Opciones.tcp)
+        new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("der2");
+        else
+        new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+        new Client (packet_der2).start();
+
 
 
     }
@@ -353,11 +407,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         stop();
         super.onPause();
+        if(chatserver != null)
+        {
+            if(!chatserver.isInterrupted())
+            {
+                chatserver.interrupt();
+            }
+        }
+
     }
 
     @Override
     protected void onResume() {
         start();
+        construirDatagram();
+        try {
+            if(!Opciones.cliente && !Opciones.offline)
+
+              {
+                chatserver = new com.fkoteam.anairdrum.udp2.Server(getApplicationContext(),Opciones.puerto);
+                chatserver.start();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onResume();
     }
 
@@ -689,4 +763,22 @@ void calculaNumeros()
         return true;
 
     }
+
+    private void construirDatagram()
+    {
+        if(!Opciones.offline) {
+            try {
+                packet_der1 = new DatagramPacket("der1".getBytes(), "der1".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_der2 = new DatagramPacket("der2".getBytes(), "der2".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_izq1 = new DatagramPacket("izq1".getBytes(), "izq1".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_izq2 = new DatagramPacket("izq2".getBytes(), "izq2".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_pie_der = new DatagramPacket("pie_der".getBytes(), "pie_der".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+
+
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

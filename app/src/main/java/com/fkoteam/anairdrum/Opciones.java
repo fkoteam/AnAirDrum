@@ -18,9 +18,9 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 public class Opciones extends AppCompatActivity {
-    public static boolean tcp = true;
+    public static boolean offline = true;
     public static boolean cliente = true;
-    RadioGroup radioGroupTcp, radioGroupCliente;
+    RadioGroup radioGroupOffline, radioGroupCliente;
     public static int puerto = 7001;
     public static String ipServidor = "192.168.1.1";
 
@@ -31,7 +31,7 @@ public class Opciones extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.opciones);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        radioGroupTcp = findViewById(R.id.tcp_udp);
+        radioGroupOffline = findViewById(R.id.offline_online);
         radioGroupCliente = findViewById(R.id.cliente_servidor);
 
 
@@ -103,12 +103,22 @@ public class Opciones extends AppCompatActivity {
 
     public void checkButton(View view) {
 
-        if (radioGroupTcp.getCheckedRadioButtonId() == findViewById(R.id.tcp).getId()) {
-            tcp = true;
-        } else tcp = false;
+        if (radioGroupOffline.getCheckedRadioButtonId() == findViewById(R.id.offline).getId()) {
+            offline = true;
+        } else offline = false;
         if (radioGroupCliente.getCheckedRadioButtonId() == findViewById(R.id.cliente).getId()) {
             cliente = true;
         } else cliente = false;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ipServidorEdit.setText(ipServidor);
+        puertoEdit.setText(""+puerto);
+        if(!cliente)
+            radioGroupCliente.check(R.id.servidor);
+        if(!offline)
+            radioGroupOffline.check(R.id.online);
+    }
 }
