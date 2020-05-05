@@ -77,8 +77,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // - 1  mano izq, 1 mano derecha
     double izq=1;
     TextView txt_progreso;
-    double min_value=1,sensibilidad=1,primeroX,segundoX,terceroX,primeroZ,segundoZ,terceroZ;
+    int min_value=1,sensibilidad=1;
+    double primeroX,segundoX,terceroX,primeroZ,segundoZ,terceroZ;
     boolean started=false;
+    SeekBar seekBar;
 
     String log="";
     String parametro="2";
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Preferencias.init(getApplicationContext());
 
         construirDatagram();
 
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     start();
             }
         });
-        SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
         txt_progreso = (TextView) findViewById(R.id.txt_progreso);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -165,6 +167,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                Preferencias.write(Preferencias.SENSIBILIDAD, sensibilidad);//save string in shared preference.
+
 
             }
         });
@@ -421,6 +425,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         start();
         construirDatagram();
+
+        Opciones.cliente=Preferencias.read(Preferencias.CLIENTE, Opciones.cliente);//read string in shared preference.
+        Opciones.offline=Preferencias.read(Preferencias.OFFLINE, Opciones.offline);//read string in shared preference.
+        Opciones.puerto=Preferencias.read(Preferencias.PUERTO, Opciones.puerto);//read string in shared preference.
+        Opciones.ipServidor=Preferencias.read(Preferencias.IP_SERVIDOR, Opciones.ipServidor);//read string in shared preference.
+        int check=Preferencias.read(Preferencias.MODO, R.id.mano_der);
+        radioGroup.check(check);
+        gestionaCheck(check);//read string in shared preference);
+
+        int sensibilidad_priv=Preferencias.read(Preferencias.SENSIBILIDAD, sensibilidad);
+        sensibilidad=sensibilidad_priv;
+        txt_progreso.setText("" + sensibilidad_priv );
+        seekBar.setProgress(sensibilidad-min_value);
+
+        calculaNumeros();
+
+
         try {
             if(!Opciones.cliente && !Opciones.offline)
 
@@ -715,7 +736,18 @@ void calculaNumeros()
 }
 
     public void checkButton(View v) {
-        if(radioGroup.getCheckedRadioButtonId() == findViewById(R.id.mano_der).getId()) {
+        Preferencias.write(Preferencias.MODO, radioGroup.getCheckedRadioButtonId());//save string in shared preference.
+        gestionaCheck(radioGroup.getCheckedRadioButtonId());
+
+
+
+
+    }
+
+
+    private void gestionaCheck(int checked)
+    {
+        if(checked == findViewById(R.id.mano_der).getId()) {
 
             izq=1;
             calculaNumeros();
@@ -724,7 +756,7 @@ void calculaNumeros()
             if(!started)
                 start();
         }
-        if(radioGroup.getCheckedRadioButtonId() == findViewById(R.id.mano_izq).getId()) {
+        if(checked == findViewById(R.id.mano_izq).getId()) {
 
             izq=-1;
             calculaNumeros();
@@ -736,16 +768,13 @@ void calculaNumeros()
 
 
         }
-        if(radioGroup.getCheckedRadioButtonId() == findViewById(R.id.pie_der).getId()) {
+        if(checked == findViewById(R.id.pie_der).getId()) {
             findViewById(R.id.volver).setVisibility(View.VISIBLE);
             findViewById(R.id.pedal).setVisibility(View.VISIBLE);
-            if(started)
+            if (started)
                 stop();
 
         }
-
-
-
     }
 
 

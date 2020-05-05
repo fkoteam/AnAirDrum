@@ -40,7 +40,7 @@ public class Opciones extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.txt_ip)).setText("Ip de este dispositivo: " + ip);
 
-        puertoEdit = (EditText) findViewById(R.id.puerto);
+        puertoEdit =  findViewById(R.id.puerto);
 
         puertoEdit.addTextChangedListener(new TextWatcher() {
 
@@ -51,6 +51,7 @@ public class Opciones extends AppCompatActivity {
                     puerto = 7001;
                 } else
                     puerto = Integer.parseInt(s.toString());
+                Preferencias.write(Preferencias.PUERTO, puerto);//save string in shared preference.
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -61,7 +62,7 @@ public class Opciones extends AppCompatActivity {
         });
 
 
-        ipServidorEdit = (EditText) findViewById(R.id.ip_servidor);
+        ipServidorEdit =  findViewById(R.id.ip_servidor);
 
         ipServidorEdit.addTextChangedListener(new TextWatcher() {
 
@@ -72,6 +73,8 @@ public class Opciones extends AppCompatActivity {
                     ipServidor = "192.168.1.1";
                 } else
                     ipServidor = s.toString();
+                Preferencias.write(Preferencias.IP_SERVIDOR, ipServidor);//save string in shared preference.
+
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -104,12 +107,10 @@ public class Opciones extends AppCompatActivity {
 
     public void checkButton(View view) {
 
-        if (radioGroupOffline.getCheckedRadioButtonId() == findViewById(R.id.offline).getId()) {
-            offline = true;
-        } else offline = false;
-        if (radioGroupCliente.getCheckedRadioButtonId() == findViewById(R.id.cliente).getId()) {
-            cliente = true;
-        } else cliente = false;
+        offline = radioGroupOffline.getCheckedRadioButtonId() == findViewById(R.id.offline).getId();
+        cliente = radioGroupCliente.getCheckedRadioButtonId() == findViewById(R.id.cliente).getId();
+        Preferencias.write(Preferencias.OFFLINE, offline);//save string in shared preference.
+        Preferencias.write(Preferencias.CLIENTE, cliente);//save int in shared preference.
         visibilidad();
     }
 
