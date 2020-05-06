@@ -94,12 +94,12 @@ public class Server extends Thread {
                         mediaPlayers.der2();
 
                     } else if ("7".equals(recibido)) {
-                        MediaPlayers.pie_izq_pulsado = true;
+                        mediaPlayers.setPie_izq_pulsado(true);
                         //pie_izq_pulsado
 
 
                     } else if ("8".equals(recibido)) {
-                        MediaPlayers.pie_izq_pulsado = false;
+                        mediaPlayers.setPie_izq_pulsado(false);
                         mediaPlayers.pie_izq();
                         //pie_izq_no_pulsado
 

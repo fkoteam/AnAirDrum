@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     int mAzimuthIni=-9999;
     double mAzimuth_f=0.0, mAzimuth_f_media,mAzimuth_f_1,mAzimuth_f_2,mAzimuth_f_3;
     float mAzimuthIni_f=-9999;
-    double mAzimuth_f_arr[]=new double[4];
+
     double fuerza;
     boolean haveSensor = false, haveSensor2 = false, haveSensor3 = false;
     float[] rMat = new float[9];
@@ -139,14 +139,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
         final Button button_izq = findViewById(R.id.pedal_izq);
         button_izq.setOnTouchListener(new View.OnTouchListener() {
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (Opciones.offline) {
-                    Toast.makeText(getApplicationContext(), "El pedal izquierdo solo puede usarse en modo online", Toast.LENGTH_SHORT).show();
-                    mediaplayers.pie_izq_pulsado = false;
+                    Toast.makeText(getApplicationContext(), R.string.pedal_offline, Toast.LENGTH_SHORT).show();
+                    mediaplayers.setPie_izq_pulsado(false);
                 } else {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        mediaplayers.pie_izq_pulsado = true;
+                        mediaplayers.setPie_izq_pulsado(true);
                      /*   if (Opciones.cliente)
                             new Client(packet_pie_izq_pulsado).start();*/
                         /*if (!Opciones.cliente)
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         }*/
                     }
                     if (event.getAction() == MotionEvent.ACTION_UP) {
-                        mediaplayers.pie_izq_pulsado = false;
+                        mediaplayers.setPie_izq_pulsado(false);
                         if (!Opciones.cliente) {
                            /* if(chatserver!=null)
                                 chatserver.pie_izq_pulsado=false;*/
@@ -192,8 +193,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     start();
             }
         });
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        txt_progreso = (TextView) findViewById(R.id.txt_progreso);
+        seekBar = findViewById(R.id.seekBar);
+        txt_progreso = findViewById(R.id.txt_progreso);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -216,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
         calculaNumeros();
-        txt_mAzimuth = (TextView) findViewById(R.id.txt_mAzimuth);
+        txt_mAzimuth = findViewById(R.id.txt_mAzimuth);
         sensorManager=(SensorManager)getSystemService(SENSOR_SERVICE);
 
         /*sensor=sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -429,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void der1() {
         if(!Opciones.cliente || Opciones.offline) {
-            if(mediaplayers.pie_izq_pulsado)
+            if(mediaplayers.isPie_izq_pulsado())
             {
                 mediaplayers.der1_op();
             }
@@ -866,7 +867,7 @@ void calculaNumeros()
 
     public void checkButton(View v) {
         if(radioGroup.getCheckedRadioButtonId()==findViewById(R.id.pie_izq).getId() && Opciones.offline) {
-            Toast.makeText(getApplicationContext(), "El pedal izquierdo solo puede usarse en modo online", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.pedal_offline, Toast.LENGTH_SHORT).show();
 
             radioGroup.check(Preferencias.read(Preferencias.MODO, R.id.mano_der));
         }

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">An Air Drum</string>
+    <string name="pedal_offline">El pedal izquierdo solo puede usarse en modo online</string>
+    <string name="ip_de_dispositivo">Ip de este dispositivo: %1$s</string>
+    <string name="no_wifi">No wifi</string>
+    <string name="opciones">Opciones</string>
+    <string name="mano_derecha">Mano derecha</string>
+    <string name="mano_izquierda">Mano izquierda</string>
+    <string name="pedal_derecho">Pedal derecho</string>
+    <string name="pedal_izquierdo">Pedal izquierdo</string>
+    <string name="volver">Volver</string>
 </resources>

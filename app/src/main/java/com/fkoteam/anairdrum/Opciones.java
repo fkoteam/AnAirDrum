@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.Objects;
 
 public class Opciones extends AppCompatActivity {
     public static boolean offline = true;
@@ -30,7 +31,7 @@ public class Opciones extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.opciones);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         radioGroupOffline = findViewById(R.id.offline_online);
         radioGroupCliente = findViewById(R.id.cliente_servidor);
 
@@ -38,7 +39,7 @@ public class Opciones extends AppCompatActivity {
         String ip = getLocalIpAddress();
         visibilidad();
 
-        ((TextView) findViewById(R.id.txt_ip)).setText("Ip de este dispositivo: " + ip);
+        ((TextView) findViewById(R.id.txt_ip)).setText(getString(R.string.ip_de_dispositivo,ip) );
 
         puertoEdit =  findViewById(R.id.puerto);
 
@@ -99,7 +100,7 @@ public class Opciones extends AppCompatActivity {
                 }
             }
         } catch (SocketException ex) {
-            Toast.makeText(getApplicationContext(), "No wifi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.no_wifi, Toast.LENGTH_SHORT).show();
         }
         return null;
     }

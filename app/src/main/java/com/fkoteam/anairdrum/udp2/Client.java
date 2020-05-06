@@ -29,27 +29,27 @@ public class Client extends Thread{
         }
         catch(SocketException e)
         {
-            e.printStackTrace();
+           /* e.printStackTrace();
             String error = e.toString();
-            Log.e("Error by Sender", error);
+            Log.e("Error by Sender", error);*/
         }
         catch(UnknownHostException e)
         {
-            e.printStackTrace();
+            /*e.printStackTrace();
             String error = e.toString();
-            Log.e("Error by Sender", error);
+            Log.e("Error by Sender", error);*/
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            /*e.printStackTrace();
             String error = e.toString();
-            Log.e("Error by Sender", error);
+            Log.e("Error by Sender", error);*/
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            /*e.printStackTrace();
             String error = e.toString();
-            Log.e("Error by Sender", error);
+            Log.e("Error by Sender", error);*/
         }
         finally{
             if(socket != null){
