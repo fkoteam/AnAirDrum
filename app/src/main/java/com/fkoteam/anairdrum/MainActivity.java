@@ -16,6 +16,7 @@ import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -50,10 +51,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     RadioGroup radioGroup;
     RadioButton radioButton;
     com.fkoteam.anairdrum.udp2.Server chatserver;
-    DatagramPacket packet_izq1,packet_izq2,packet_der1,packet_der2,packet_pie_der;
+    DatagramPacket packet_izq1,packet_izq2,packet_der1cl,packet_der1op,packet_der2,packet_pie_der,packet_pie_izq_pulsado,packet_pie_izq_no_pulsado;
 
 
-    MediaPlayer izq1_1,izq1_2,izq1_3,izq2_1,izq2_2,izq2_3,der1_1,der1_2,der1_3,der2_1,der2_2,der2_3,pie_der1,pie_der2,pie_der3;
+    MediaPlayer izq1_1,izq1_2,izq1_3,izq2_1,izq2_2,izq2_3,der1op_1,der1op_2,der1op_3,der1cl_1,der1cl_2,der1cl_3,der2_1,der2_2,der2_3,pie_der1,pie_der2,pie_der3,pie_izq_cerr1,pie_izq_cerr2,pie_izq_cerr3;
 
     Long timestamp_uno,timestamp_dos;
     double x_uno,x_dos;
@@ -76,11 +77,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     double min_x=99,max_x=0;
     // - 1  mano izq, 1 mano derecha
     double izq=1;
+
     TextView txt_progreso;
     int min_value=1,sensibilidad=1;
     double primeroX,segundoX,terceroX,primeroZ,segundoZ,terceroZ;
     boolean started=false;
     SeekBar seekBar;
+    boolean pie_izq_pulsado=false;
 
     String log="";
     String parametro="2";
@@ -101,9 +104,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         izq1_1 = MediaPlayer.create(this, R.raw.izq1);
         izq1_2 = MediaPlayer.create(this, R.raw.izq1);
         izq1_3 = MediaPlayer.create(this, R.raw.izq1);
-        der1_1 = MediaPlayer.create(this, R.raw.der1);
-        der1_2 = MediaPlayer.create(this, R.raw.der1);
-        der1_3 = MediaPlayer.create(this, R.raw.der1);
+        der1op_1 = MediaPlayer.create(this, R.raw.der1op);
+        der1op_2 = MediaPlayer.create(this, R.raw.der1op);
+        der1op_3 = MediaPlayer.create(this, R.raw.der1op);
+        der1cl_1 = MediaPlayer.create(this, R.raw.der1cl);
+        der1cl_2 = MediaPlayer.create(this, R.raw.der1cl);
+        der1cl_3 = MediaPlayer.create(this, R.raw.der1cl);
         izq2_1 = MediaPlayer.create(this, R.raw.izq2);
         izq2_2 = MediaPlayer.create(this, R.raw.izq2);
         izq2_3 = MediaPlayer.create(this, R.raw.izq2);
@@ -113,28 +119,53 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         pie_der1 = MediaPlayer.create(this, R.raw.pie_der);
         pie_der2 = MediaPlayer.create(this, R.raw.pie_der);
         pie_der3 = MediaPlayer.create(this, R.raw.pie_der);
+        pie_izq_cerr1 = MediaPlayer.create(this, R.raw.pie_izq_cer);
+        pie_izq_cerr2 = MediaPlayer.create(this, R.raw.pie_izq_cer);
+        pie_izq_cerr3 = MediaPlayer.create(this, R.raw.pie_izq_cer);
 
-        final Button button = findViewById(R.id.pedal);
+        final Button button = findViewById(R.id.pedal_der);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 if(!Opciones.cliente || Opciones.offline)
                     pie_der();
                 else
-                    /*if(!Opciones.tcp) {
-                       // Toast.makeText(getApplicationContext(),Opciones.ipServidor+ ":"+Opciones.puerto,Toast.LENGTH_SHORT).show();
-                        new com.fkoteam.anairdrum.udp.Client(getApplicationContext(), Opciones.ipServidor, Opciones.puerto).send("pie_der");
-                    }
-                    else
-                        new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+
                     new Client (packet_pie_der).start();
 
 
-
-
-
-
             }
+        });
+        final Button button_izq = findViewById(R.id.pedal_izq);
+        button_izq.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (Opciones.offline) {
+                    Toast.makeText(getApplicationContext(), "El pedal izquierdo solo puede usarse en modo online", Toast.LENGTH_SHORT).show();
+                    pie_izq_pulsado = false;
+                } else {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        pie_izq_pulsado = true;
+                        if (Opciones.cliente)
+                            new Client(packet_pie_izq_pulsado).start();
+                        /*if (!Opciones.cliente)
+                            pie_izq();
+                        else
+                            new Client(packet_pie_izq).start();*/
+                    }
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        pie_izq_pulsado = false;
+                        if (!Opciones.cliente)
+                            pie_izq();
+                        else
+                            new Client(packet_pie_izq_no_pulsado).start();
+                    }
+
+                }
+                return true;
+            }
+
+
         });
         final Button volver = findViewById(R.id.volver);
         volver.setOnClickListener(new View.OnClickListener() {
@@ -143,7 +174,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 izq=1;
                 calculaNumeros();
                 findViewById(R.id.volver).setVisibility(View.GONE);
-                findViewById(R.id.pedal).setVisibility(View.GONE);
+                findViewById(R.id.pedal_der).setVisibility(View.GONE);
+                findViewById(R.id.pedal_izq).setVisibility(View.GONE);
                 radioGroup.check(R.id.mano_der);
                 if(!started)
                     start();
@@ -251,6 +283,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     }
+    private void pie_izq(){
+    if(!pie_izq_pulsado) {
+        if (pie_izq_cerr1.isPlaying()) {
+            if (pie_izq_cerr2.isPlaying())
+                pie_izq_cerr3.start();
+            else
+                pie_izq_cerr2.start();
+        } else
+            pie_izq_cerr1.start();
+    }
+
+
+    }
     private void izq1(){
         if(!Opciones.cliente || Opciones.offline) {
             if (izq1_1.isPlaying()) {
@@ -296,20 +341,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void der1() {
         if(!Opciones.cliente || Opciones.offline) {
-        if (der1_1.isPlaying()) {
-            if (der1_2.isPlaying())
-                der1_3.start();
+            if(pie_izq_pulsado)
+            {
+                if (der1op_1.isPlaying()) {
+                    if (der1op_2.isPlaying())
+                        der1op_3.start();
+                    else
+                        der1op_2.start();
+                } else
+                    der1op_1.start();
+            }
             else
-                der1_2.start();
-        } else
-            der1_1.start();
+            {
+                if (der1cl_1.isPlaying()) {
+                    if (der1cl_2.isPlaying())
+                        der1cl_3.start();
+                    else
+                        der1cl_2.start();
+                } else
+                    der1cl_1.start();
+            }
+
     }
-        else
+        else {
         /*if(!Opciones.tcp)
         new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("der1");
         else
         new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
-            new Client (packet_der1).start();
+            if (pie_izq_pulsado)
+                new Client(packet_der1op).start();
+            else
+                new Client(packet_der1cl).start();
+        }
+
 
 
 
@@ -736,8 +800,16 @@ void calculaNumeros()
 }
 
     public void checkButton(View v) {
-        Preferencias.write(Preferencias.MODO, radioGroup.getCheckedRadioButtonId());//save string in shared preference.
-        gestionaCheck(radioGroup.getCheckedRadioButtonId());
+        if(radioGroup.getCheckedRadioButtonId()==findViewById(R.id.pie_izq).getId() && Opciones.offline) {
+            Toast.makeText(getApplicationContext(), "El pedal izquierdo solo puede usarse en modo online", Toast.LENGTH_SHORT).show();
+
+            radioGroup.check(Preferencias.read(Preferencias.MODO, R.id.mano_der));
+        }
+        else {
+
+            Preferencias.write(Preferencias.MODO, radioGroup.getCheckedRadioButtonId());//save string in shared preference.
+            gestionaCheck(radioGroup.getCheckedRadioButtonId());
+        }
 
 
 
@@ -752,7 +824,9 @@ void calculaNumeros()
             izq=1;
             calculaNumeros();
             findViewById(R.id.volver).setVisibility(View.GONE);
-            findViewById(R.id.pedal).setVisibility(View.GONE);
+            findViewById(R.id.pedal_der).setVisibility(View.GONE);
+            findViewById(R.id.pedal_izq).setVisibility(View.GONE);
+
             if(!started)
                 start();
         }
@@ -762,7 +836,9 @@ void calculaNumeros()
             calculaNumeros();
 
             findViewById(R.id.volver).setVisibility(View.GONE);
-            findViewById(R.id.pedal).setVisibility(View.GONE);
+            findViewById(R.id.pedal_der).setVisibility(View.GONE);
+            findViewById(R.id.pedal_izq).setVisibility(View.GONE);
+
             if(!started)
                 start();
 
@@ -770,7 +846,18 @@ void calculaNumeros()
         }
         if(checked == findViewById(R.id.pie_der).getId()) {
             findViewById(R.id.volver).setVisibility(View.VISIBLE);
-            findViewById(R.id.pedal).setVisibility(View.VISIBLE);
+            findViewById(R.id.pedal_der).setVisibility(View.VISIBLE);
+            findViewById(R.id.pedal_izq).setVisibility(View.GONE);
+
+            if (started)
+                stop();
+
+        }
+        if(checked == findViewById(R.id.pie_izq).getId()) {
+            findViewById(R.id.volver).setVisibility(View.VISIBLE);
+            findViewById(R.id.pedal_der).setVisibility(View.GONE);
+            findViewById(R.id.pedal_izq).setVisibility(View.VISIBLE);
+
             if (started)
                 stop();
 
@@ -797,11 +884,17 @@ void calculaNumeros()
     {
         if(!Opciones.offline) {
             try {
-                packet_der1 = new DatagramPacket("der1".getBytes(), "der1".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_der2 = new DatagramPacket("der2".getBytes(), "der2".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_izq1 = new DatagramPacket("izq1".getBytes(), "izq1".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_izq2 = new DatagramPacket("izq2".getBytes(), "izq2".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_pie_der = new DatagramPacket("pie_der".getBytes(), "pie_der".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_der1cl = new DatagramPacket("1".getBytes(), "1".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_der1op = new DatagramPacket("2".getBytes(), "2".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+
+                packet_der2 = new DatagramPacket("3".getBytes(), "3".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_izq1 = new DatagramPacket("4".getBytes(), "4".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_izq2 = new DatagramPacket("5".getBytes(), "5".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_pie_der = new DatagramPacket("6".getBytes(), "6".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_pie_izq_pulsado = new DatagramPacket("7".getBytes(), "7".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_pie_izq_no_pulsado = new DatagramPacket("8".getBytes(), "8".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+
+
 
 
             } catch (UnknownHostException e) {

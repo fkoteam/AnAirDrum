@@ -14,9 +14,11 @@ import com.fkoteam.anairdrum.MainActivity;
 
 public class Server extends Thread{
 
-    private DatagramSocket server = null;
+    private DatagramSocket server;
     private Context mContext;
-    MediaPlayer izq1_1,izq1_2,izq1_3,izq2_1,izq2_2,izq2_3,der1_1,der1_2,der1_3,der2_1,der2_2,der2_3,pie_der1,pie_der2,pie_der3;
+    boolean pie_izq_pulsado=false;
+
+    MediaPlayer izq1_1,izq1_2,izq1_3,izq2_1,izq2_2,izq2_3,der1op_1,der1op_2,der1op_3,der1cl_1,der1cl_2,der1cl_3,der2_1,der2_2,der2_3,pie_der1,pie_der2,pie_der3,pie_izq_cerr1,pie_izq_cerr2,pie_izq_cerr3;
 
 
     public Server(Context applicationContext, int puerto) throws IOException {
@@ -25,9 +27,12 @@ public class Server extends Thread{
         izq1_1 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("izq1", "raw", mContext.getPackageName()));
         izq1_2 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("izq1", "raw", mContext.getPackageName()));
         izq1_3 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("izq1", "raw", mContext.getPackageName()));
-        der1_1 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1", "raw", mContext.getPackageName()));
-        der1_2 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1", "raw", mContext.getPackageName()));
-        der1_3 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1", "raw", mContext.getPackageName()));
+        der1op_1 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1op", "raw", mContext.getPackageName()));
+        der1op_2 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1op", "raw", mContext.getPackageName()));
+        der1op_3 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1op", "raw", mContext.getPackageName()));
+        der1cl_1 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1cl", "raw", mContext.getPackageName()));
+        der1cl_2 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1cl", "raw", mContext.getPackageName()));
+        der1cl_3 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("der1cl", "raw", mContext.getPackageName()));
         izq2_1 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("izq2", "raw", mContext.getPackageName()));
         izq2_2 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("izq2", "raw", mContext.getPackageName()));
         izq2_3 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("izq2", "raw", mContext.getPackageName()));
@@ -37,52 +42,74 @@ public class Server extends Thread{
         pie_der1 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("pie_der", "raw", mContext.getPackageName()));
         pie_der2 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("pie_der", "raw", mContext.getPackageName()));
         pie_der3 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("pie_der", "raw", mContext.getPackageName()));
+        pie_izq_cerr1 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("pie_izq_cer", "raw", mContext.getPackageName()));
+        pie_izq_cerr2 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("pie_izq_cer", "raw", mContext.getPackageName()));
+        pie_izq_cerr3 = MediaPlayer.create(mContext, mContext.getResources().getIdentifier("pie_izq_cer", "raw", mContext.getPackageName()));
 
         server = new DatagramSocket(puerto);
     }
     public void run(){
 
         //byte[] byte1024 = new byte[1024];
-        byte[] byte1024 = "pie_der".getBytes();
+        byte[] byte1024 = "1".getBytes();
         //Message msg = new Message();
         //Bundle data = new Bundle();
         DatagramPacket dPacket = new DatagramPacket(byte1024, byte1024.length);
         String recibido;
         try{
-            Log.d("User","runing run()");
+            //Log.d("User","runing run()");
             while(true){
                 server.receive(dPacket);
                 while(true)
                 {
                     recibido = new String(byte1024, 0, dPacket.getLength());
-                    System.out.println("recibidooo:"+recibido);
+                   // System.out.println("recibidooo:"+recibido);
 
 
-                    if("pie_der".equals(recibido)) {
+                    if("6".equals(recibido)) {
 
                         pie_der();
 
                     }
-                    else if("izq1".equals(recibido)) {
+                    else if("4".equals(recibido)) {
 
                         izq1();
 
                     } else
-                    if("izq2".equals(recibido)) {
+                    if("5".equals(recibido)) {
 
                         izq2();
 
                     }
                     else
-                    if("der1".equals(recibido)) {
-
-                        der1();
+                    if("1".equals(recibido)) {
+//TODO close
+                        der1_op();
 
                     }
                     else
-                    if("der2".equals(recibido)) {
+                    if("2".equals(recibido)) {
+//TODO open
+                        der1_cl();
+
+                    }
+                    else
+                    if("3".equals(recibido)) {
 
                         der2();
+
+                    }
+                    else
+                    if("7".equals(recibido)) {
+                        pie_izq_pulsado=true;
+                        //pie_izq_pulsado
+                        pie_izq();
+
+                    }
+                    else
+                    if("8".equals(recibido)) {
+                        pie_izq_pulsado=false;
+                        //pie_izq_no_pulsado
 
                     }
 
@@ -148,21 +175,43 @@ public class Server extends Thread{
 
 
     }
-
-    private void der1(){
-
-        if(der1_1.isPlaying())
-        {
-            if(der1_2.isPlaying())
-                der1_3.start();
-            else
-                der1_2.start();
+    private void pie_izq() {
+        if (!pie_izq_pulsado) {
+            if (pie_izq_cerr1.isPlaying()) {
+                if (pie_izq_cerr2.isPlaying())
+                    pie_izq_cerr3.start();
+                else
+                    pie_izq_cerr2.start();
+            } else
+                pie_izq_cerr1.start();
         }
-        else
-            der1_1.start();
-
-
     }
+
+
+    
+
+    private void der1_op() {
+
+                if (der1op_1.isPlaying()) {
+                    if (der1op_2.isPlaying())
+                        der1op_3.start();
+                    else
+                        der1op_2.start();
+                } else
+                    der1op_1.start();
+            }
+
+    private void der1_cl() {
+
+        if (der1cl_1.isPlaying()) {
+            if (der1cl_2.isPlaying())
+                der1cl_3.start();
+            else
+                der1cl_2.start();
+        } else
+            der1cl_1.start();
+    }
+
 
     private void der2(){
 

@@ -55,7 +55,13 @@
             android:id="@+id/pie_der"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pie derecho"
+            android:text="Pedal derecho"
+            android:onClick="checkButton"/>
+        <RadioButton
+            android:id="@+id/pie_izq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pedal derecho"
             android:onClick="checkButton"/>
 
     </RadioGroup>
@@ -72,14 +78,25 @@
         android:progress="0" />
 
     <Button
-        android:id="@+id/pedal"
+        android:id="@+id/pedal_der"
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/volver"
         android:layout_centerHorizontal="true"
         android:soundEffectsEnabled="false"
-        android:text="pedal"
+        android:text="Pedal derecho"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/pedal_izq"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/volver"
+        android:layout_centerHorizontal="true"
+        android:soundEffectsEnabled="false"
+        android:text="Pedal izquierdo"
         android:visibility="gone" />
 
     <Button
