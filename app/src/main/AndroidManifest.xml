@@ -22,7 +22,6 @@
         <activity android:name=".Opciones"
             android:label="Opciones"
             android:parentActivityName=".MainActivity"/>
-        <service android:name=".Golpe" />
     </application>
 
 </manifest>
