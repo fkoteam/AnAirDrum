@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     com.fkoteam.anairdrum.udp2.Server chatserver;
     DatagramPacket packet_izq1,packet_izq2,packet_der1cl,packet_der1op,packet_der2,packet_pie_der,packet_pie_izq_pulsado,packet_pie_izq_no_pulsado;
 
-
-    MediaPlayer izq1_1,izq1_2,izq1_3,izq2_1,izq2_2,izq2_3,der1op_1,der1op_2,der1op_3,der1cl_1,der1cl_2,der1cl_3,der2_1,der2_2,der2_3,pie_der1,pie_der2,pie_der3,pie_izq_cerr1,pie_izq_cerr2,pie_izq_cerr3;
+    MediaPlayers mediaplayers;
+    //MediaPlayer izq1_1,izq1_2,izq1_3,izq2_1,izq2_2,izq2_3,der1op_1,der1op_2,der1op_3,der1cl_1,der1cl_2,der1cl_3,der2_1,der2_2,der2_3,pie_der1,pie_der2,pie_der3,pie_izq_cerr1,pie_izq_cerr2,pie_izq_cerr3;
 
     Long timestamp_uno,timestamp_dos;
     double x_uno,x_dos;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     double primeroX,segundoX,terceroX,primeroZ,segundoZ,terceroZ;
     boolean started=false;
     SeekBar seekBar;
-    boolean pie_izq_pulsado=false;
+    //boolean pie_izq_pulsado=false;
 
     String log="";
     String parametro="2";
@@ -97,11 +97,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Preferencias.init(getApplicationContext());
+        mediaplayers=new MediaPlayers(getApplicationContext());
 
         construirDatagram();
 
         radioGroup = findViewById(R.id.radioGroup);
-        izq1_1 = MediaPlayer.create(this, R.raw.izq1);
+        /*izq1_1 = MediaPlayer.create(this, R.raw.izq1);
         izq1_2 = MediaPlayer.create(this, R.raw.izq1);
         izq1_3 = MediaPlayer.create(this, R.raw.izq1);
         der1op_1 = MediaPlayer.create(this, R.raw.der1op);
@@ -121,14 +122,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         pie_der3 = MediaPlayer.create(this, R.raw.pie_der);
         pie_izq_cerr1 = MediaPlayer.create(this, R.raw.pie_izq_cer);
         pie_izq_cerr2 = MediaPlayer.create(this, R.raw.pie_izq_cer);
-        pie_izq_cerr3 = MediaPlayer.create(this, R.raw.pie_izq_cer);
+        pie_izq_cerr3 = MediaPlayer.create(this, R.raw.pie_izq_cer);*/
 
         final Button button = findViewById(R.id.pedal_der);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 if(!Opciones.cliente || Opciones.offline)
-                    pie_der();
+                    mediaplayers.pie_der();
                 else
 
                     new Client (packet_pie_der).start();
@@ -142,21 +143,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public boolean onTouch(View v, MotionEvent event) {
                 if (Opciones.offline) {
                     Toast.makeText(getApplicationContext(), "El pedal izquierdo solo puede usarse en modo online", Toast.LENGTH_SHORT).show();
-                    pie_izq_pulsado = false;
+                    mediaplayers.pie_izq_pulsado = false;
                 } else {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        pie_izq_pulsado = true;
-                        if (Opciones.cliente)
-                            new Client(packet_pie_izq_pulsado).start();
+                        mediaplayers.pie_izq_pulsado = true;
+                     /*   if (Opciones.cliente)
+                            new Client(packet_pie_izq_pulsado).start();*/
                         /*if (!Opciones.cliente)
                             pie_izq();
                         else
                             new Client(packet_pie_izq).start();*/
+                        if (Opciones.cliente)
+                            new Client(packet_pie_izq_pulsado).start();
+                 /*       else
+                        {
+                            if(chatserver!=null)
+                                chatserver.pie_izq_pulsado=true;
+                        }*/
                     }
                     if (event.getAction() == MotionEvent.ACTION_UP) {
-                        pie_izq_pulsado = false;
-                        if (!Opciones.cliente)
-                            pie_izq();
+                        mediaplayers.pie_izq_pulsado = false;
+                        if (!Opciones.cliente) {
+                           /* if(chatserver!=null)
+                                chatserver.pie_izq_pulsado=false;*/
+                            mediaplayers.pie_izq();
+                        }
                         else
                             new Client(packet_pie_izq_no_pulsado).start();
                     }
@@ -243,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(!Opciones.cliente && chatserver==null &&  !Opciones.offline)
 
              {
-                chatserver = new com.fkoteam.anairdrum.udp2.Server(getApplicationContext(),Opciones.puerto);
+                chatserver = new com.fkoteam.anairdrum.udp2.Server(getApplicationContext(),Opciones.puerto,mediaplayers);
                 chatserver.start();
             }
 
@@ -268,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         }.execute();*/
     }
-
+/*
     private void pie_der(){
 
         if(pie_der1.isPlaying())
@@ -284,7 +295,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
     private void pie_izq(){
-    if(!pie_izq_pulsado) {
+        if(der1op_1.isPlaying())
+            der1op_1.stop();
+        if(der1op_2.isPlaying())
+            der1op_2.stop();
+        if(der1op_2.isPlaying())
+            der1op_2.stop();
         if (pie_izq_cerr1.isPlaying()) {
             if (pie_izq_cerr2.isPlaying())
                 pie_izq_cerr3.start();
@@ -292,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 pie_izq_cerr2.start();
         } else
             pie_izq_cerr1.start();
-    }
+
 
 
     }
@@ -308,10 +324,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
         else
-       /* if(!Opciones.tcp)
-            new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("izq1");
-        else
-            new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+
 
             new Client (packet_izq1).start();
 
@@ -329,10 +342,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 izq2_1.start();
         }
         else
-           /* if(!Opciones.tcp)
-            new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("izq2");
-        else
-                new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+
         new Client (packet_izq2).start();
 
     }
@@ -364,10 +374,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
         else {
-        /*if(!Opciones.tcp)
-        new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("der1");
-        else
-        new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+
             if (pie_izq_pulsado)
                 new Client(packet_der1op).start();
             else
@@ -391,16 +398,73 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         else
         der2_1.start();
         }  else
-        /*if(!Opciones.tcp)
-        new com.fkoteam.anairdrum.udp.Client(getApplicationContext(),Opciones.ipServidor, Opciones.puerto).send("der2");
-        else
-        new com.fkoteam.anairdrum.tcp.Client(Opciones.ipServidor, Opciones.puerto);*/
+
         new Client (packet_der2).start();
+
+
+
+    }*/
+
+    private void izq1(){
+        if(!Opciones.cliente || Opciones.offline) {
+            mediaplayers.izq1();
+        }
+        else
+            new Client (packet_izq1).start();
+
+
+    }
+
+    private void izq2() {
+        if (!Opciones.cliente || Opciones.offline) {
+            mediaplayers.izq2();
+        }
+        else
+
+            new Client (packet_izq2).start();
+
+    }
+
+
+
+    private void der1() {
+        if(!Opciones.cliente || Opciones.offline) {
+            if(mediaplayers.pie_izq_pulsado)
+            {
+                mediaplayers.der1_op();
+            }
+            else
+            {
+                mediaplayers.der1_cl();
+
+            }
+
+        }
+        else {
+            new Client(packet_der1op).start();
+
+            /*if (mediaplayers.pie_izq_pulsado)
+                new Client(packet_der1op).start();
+            else
+                new Client(packet_der1cl).start();*/
+        }
+
 
 
 
     }
 
+    private void der2(){
+        if (!Opciones.cliente || Opciones.offline) {
+            mediaplayers.der2();
+
+        }  else
+
+            new Client (packet_der2).start();
+
+
+
+    }
    // private void song2(){
      /*   if(mediaPlayer.isPlaying())
             mediaPlayer.pause();
@@ -488,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         start();
-        construirDatagram();
+
 
         Opciones.cliente=Preferencias.read(Preferencias.CLIENTE, Opciones.cliente);//read string in shared preference.
         Opciones.offline=Preferencias.read(Preferencias.OFFLINE, Opciones.offline);//read string in shared preference.
@@ -497,6 +561,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         int check=Preferencias.read(Preferencias.MODO, R.id.mano_der);
         radioGroup.check(check);
         gestionaCheck(check);//read string in shared preference);
+        construirDatagram();
 
         int sensibilidad_priv=Preferencias.read(Preferencias.SENSIBILIDAD, sensibilidad);
         sensibilidad=sensibilidad_priv;
@@ -510,7 +575,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(!Opciones.cliente && !Opciones.offline)
 
               {
-                chatserver = new com.fkoteam.anairdrum.udp2.Server(getApplicationContext(),Opciones.puerto);
+                chatserver = new com.fkoteam.anairdrum.udp2.Server(getApplicationContext(),Opciones.puerto,mediaplayers);
                 chatserver.start();
             }
 
