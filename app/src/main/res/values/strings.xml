@@ -9,4 +9,6 @@
     <string name="pedal_derecho">Pedal derecho</string>
     <string name="pedal_izquierdo">Pedal izquierdo</string>
     <string name="volver">Volver</string>
+    <string name="titulo_sensibilidad">Sensibilidad: %1$d</string>
+    <string name="sensibilidad_inicial">Sensibilidad: 1</string>
 </resources>

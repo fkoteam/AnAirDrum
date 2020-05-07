@@ -31,7 +31,7 @@ public class Opciones extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.opciones);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         radioGroupOffline = findViewById(R.id.offline_online);
         radioGroupCliente = findViewById(R.id.cliente_servidor);
 
