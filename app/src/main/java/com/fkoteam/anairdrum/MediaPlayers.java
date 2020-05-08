@@ -24,6 +24,8 @@ public class MediaPlayers {
     private  int der2;
     private  int pie_der;
     private  int pie_izq_cer;
+    private  int der3;
+    private  int izq3;
     private ArrayList<Integer> list_der1op = new ArrayList<>();
 
 
@@ -39,6 +41,8 @@ public class MediaPlayers {
         pie_der = soundpool.load(mContext, mContext.getResources().getIdentifier("pie_der", "raw", mContext.getPackageName()), 1);
         pie_izq_cer = soundpool.load(mContext, mContext.getResources().getIdentifier("pie_izq_cer", "raw", mContext.getPackageName()), 1);
         der2 = soundpool.load(mContext, mContext.getResources().getIdentifier("der2", "raw", mContext.getPackageName()), 1);
+        der3 = soundpool.load(mContext, mContext.getResources().getIdentifier("der3", "raw", mContext.getPackageName()), 1);
+        izq3 = soundpool.load(mContext, mContext.getResources().getIdentifier("izq3", "raw", mContext.getPackageName()), 1);
 
 
     }
@@ -53,11 +57,13 @@ public class MediaPlayers {
     }
 
     public void izq2() {
-
         soundpool.play(izq2, 1f, 1f, 1, 0, 1f);
-
-
-
+    }
+    public void izq3() {
+        soundpool.play(izq3, 1f, 1f, 1, 0, 1f);
+    }
+    public void der3() {
+        soundpool.play(der3, 1f, 1f, 1, 0, 1f);
     }
 
     public void pie_izq() {

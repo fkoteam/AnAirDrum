@@ -55,11 +55,11 @@ public class Server extends Thread {
                         mediaPlayers.izq2();
 
                     } else if ("1".equals(recibido)) {
-//TODO close
+
                         mediaPlayers.der1_cl();
 
                     } else if ("2".equals(recibido)) {
-//TODO open
+
                         mediaPlayers.der1_op();
 
 
@@ -79,6 +79,16 @@ public class Server extends Thread {
 
                     }
 
+                    else if ("9".equals(recibido)) {
+                        mediaPlayers.der3();
+                        //pie_izq_no_pulsado
+
+                    }
+                    else if ("0".equals(recibido)) {
+                        mediaPlayers.izq3();
+                        //pie_izq_no_pulsado
+
+                    }
                     if (true) break;
                 }
                 //CloseSocket(client);

@@ -6,14 +6,32 @@
     android:keepScreenOn="true">
 
     <TextView
-        android:id="@+id/txt_progreso"
+        android:id="@+id/txt_progresoX"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="24dp"
-        android:text="@string/sensibilidad_inicial"
-        android:textSize="30sp"
-        android:layout_above="@id/seekBar"/>
+        android:layout_marginTop="24dp"
+        android:text="@string/sensibilidad_inicial_x"
+        android:textSize="20sp"
+        android:layout_above="@id/seekBarX"/>
+    <TextView
+        android:id="@+id/txt_progresoY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="@string/sensibilidad_inicial_y"
+        android:textSize="20sp"
+        android:layout_above="@id/seekBarY"/>
+    <TextView
+        android:id="@+id/txt_progresoZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="@string/sensibilidad_inicial_z"
+        android:textSize="20sp"
+        android:layout_above="@id/seekBarZ"/>
     <TextView
         android:id="@+id/txt_mAzimuth"
 
@@ -31,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:id="@+id/radioGroup"
-        android:layout_above="@id/txt_progreso"
+        android:layout_above="@id/txt_progresoX"
         >
 
         <RadioButton
@@ -65,7 +83,7 @@
     </RadioGroup>
 
     <SeekBar
-        android:id="@+id/seekBar"
+        android:id="@+id/seekBarX"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -73,15 +91,31 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:max="29"
-        android:progress="0" />
-    <Button
-        android:id="@+id/openUserInputDialog"
-        android:layout_width="wrap_content"
+        android:progress="0"
+        android:layout_above="@id/txt_progresoY"/>
+    <SeekBar
+        android:id="@+id/seekBarY"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/seekBar"
-        android:text="@string/calibrar"
- />
+        android:layout_alignParentStart="true"
+        android:layout_above="@id/txt_progresoZ"
+
+    android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:max="29"
+        android:progress="0" />
+    <SeekBar
+        android:id="@+id/seekBarZ"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+android:layout_alignParentBottom="true"
+        android:max="29"
+android:layout_marginBottom="100dp"
+        android:progress="0" />
 
     <Button
         android:id="@+id/pedal_der"
