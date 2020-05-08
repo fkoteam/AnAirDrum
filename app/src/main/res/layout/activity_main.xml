@@ -74,6 +74,14 @@
         android:layout_centerVertical="true"
         android:max="29"
         android:progress="0" />
+    <Button
+        android:id="@+id/openUserInputDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/seekBar"
+        android:text="@string/calibrar"
+ />
 
     <Button
         android:id="@+id/pedal_der"

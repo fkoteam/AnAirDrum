@@ -1,23 +1,32 @@
 package com.fkoteam.anairdrum;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fkoteam.anairdrum.udp2.Client;
@@ -28,12 +37,16 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener  {
+    float[] orientation = new float[3];
+    float[] rMat = new float[9];
+
     SensorManager sensorManager;
     private Sensor mAccelerometer;
     TextView txt_mAzimuth;
     RadioGroup radioGroup;
+    boolean enCalibracion=false;
     com.fkoteam.anairdrum.udp2.Server chatserver;
-    DatagramPacket packet_izq1,packet_izq2,packet_der1cl,packet_der1op,packet_der2,packet_pie_der,packet_pie_izq_pulsado,packet_pie_izq_no_pulsado;
+    DatagramPacket packet_izq1,packet_izq2,packet_izq3,packet_der1cl,packet_der1op,packet_der2,packet_der3,packet_pie_der,packet_pie_izq_pulsado,packet_pie_izq_no_pulsado;
 
     MediaPlayers mediaplayers;
 
@@ -41,9 +54,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     double x_uno;
     double z_uno;
 
+    Vibrator v ;
+
+    double calibrado_der1x=-9999,calibrado_der1y=-9999,calibrado_der1z=-9999;
+    double calibrado_der2x=-9999,calibrado_der2y=-9999,calibrado_der2z=-9999;
+    double calibrado_izq1x=-9999,calibrado_izq1y=-9999,calibrado_izq1z=-9999;
+    double calibrado_izq2x=-9999,calibrado_izq2y=-9999,calibrado_izq2z=-9999;
+
+    int compararDer=-1;
+    int compararIzq=-1;
+    boolean sonando1=false,sonando2=false,sonando3=false;
+
 
     double fuerza;
     boolean haveSensor = false;
+    boolean haveSensorMagnet = false;
+    boolean haveSensorRotation = false;
+
+    View mView;
 
 
     double min_z=99;
@@ -51,16 +79,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // - 1  mano izq, 1 mano derecha
     double izq=1;
 
+    int xx, yy,zz;
+
+
     TextView txt_progreso;
     int min_value=1,sensibilidad=1;
     double primeroX,segundoX,terceroX,primeroZ,segundoZ,terceroZ;
     boolean started=false;
+    LayoutInflater layoutInflaterAndroid;
     SeekBar seekBar;
+    private float[] mRotationVector = new float[5];
 
+    float[] gData = new float[3]; // accelerometer
+    float[] mData = new float[3]; // magnetometer
+    float[] iMat = new float[9];
+
+
+    private Button mButtonCalibracion;
+    final Context c = this;
 
     SensorEventListener sensorEventListener;
     int whip = 0;
     int whip2 = 0;
+    private Sensor mRotationVectorSensor;
+    private Sensor mMagnetometerSensor;
+    private boolean mUseRotationVectorSensor=false;
+    private double mAzimuth;
+    AlertDialog alertDialogAndroid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mediaplayers=new MediaPlayers(getApplicationContext());
 
         construirDatagram();
-
+v= (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         radioGroup = findViewById(R.id.radioGroup);
 
         final Button button = findViewById(R.id.pedal_der);
@@ -86,6 +132,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             }
         });
+
+
+/*
+
+        mButtonCalibracion = (Button) findViewById(R.id.openUserInputDialog);
+        mButtonCalibracion.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                enCalibracion=true;
+                 layoutInflaterAndroid = LayoutInflater.from(c);
+                 mView = layoutInflaterAndroid.inflate(R.layout.user_input_dialog_box, null);
+                 construirChecks();
+                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(c);
+                alertDialogBuilderUserInput.setView(mView);
+
+                alertDialogBuilderUserInput
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                // ToDo get user input her
+                                enCalibracion=false;
+
+                            }
+                        })
+
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialogBox, int id) {
+                                        enCalibracion=false;
+                                        dialogBox.cancel();
+                                    }
+                                });
+
+                 alertDialogAndroid = alertDialogBuilderUserInput.create();
+                alertDialogAndroid.show();
+                alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            }
+        });
+*/
+
         final Button button_izq = findViewById(R.id.pedal_izq);
         button_izq.setOnTouchListener(new View.OnTouchListener() {
 
@@ -225,6 +312,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             new Client (packet_der2).start();
 
 
+    }
+
+    private void der3(){
+        if (!Opciones.cliente || Opciones.offline) {
+            mediaplayers.der3();
+
+        }  else
+
+            new Client (packet_der3).start();
+
+
+    }
+
+    private void izq3(){
+        if (!Opciones.cliente || Opciones.offline) {
+            mediaplayers.izq3();
+
+        }  else
+
+            new Client (packet_izq3).start();
+
 
     }
 
@@ -232,6 +340,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void start(){
         mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         haveSensor = sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+
+       // mRotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
+    /*    if(mRotationVectorSensor==null) {
+            mMagnetometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED);
+            if(mMagnetometerSensor!=null)
+                haveSensorMagnet = sensorManager.registerListener(this, mMagnetometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
+            else
+                Toast.makeText(getApplicationContext(), "Este dispositivo no dispone de los sensores necesarios", Toast.LENGTH_SHORT).show();
+        }
+
+        else
+        {
+            haveSensorRotation = sensorManager.registerListener(this, mRotationVectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+        }*/
+
         started=true;
 
 
@@ -241,6 +366,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         sensorManager.unregisterListener(sensorEventListener);
         sensorManager.unregisterListener(this,mAccelerometer);
+        if(haveSensorMagnet)
+            sensorManager.unregisterListener(this,mMagnetometerSensor);
+        if(haveSensorRotation)
+            sensorManager.unregisterListener(this,mRotationVectorSensor);
+
         started=false;
 
     }
@@ -304,100 +434,115 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
-
+/*
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-            double x = event.values[0]*izq;
-        float z = event.values[2];
 
 
-            if(x<primeroX && whip == 0){
+        float orientation[] = new float[3];
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            // Only use rotation vector sensor if it is working on this device
+            if (!mUseRotationVectorSensor) {
+                mUseRotationVectorSensor = true;
+            }
+            // calculate th rotation matrix
+            SensorManager.getRotationMatrixFromVector( rMat, event.values );
+            // get the azimuth value (orientation[0]) in degree
+            mAzimuth =  (Math.toDegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
+
+        } else if (!mUseRotationVectorSensor && event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED){
+
+            xx=Math.round(event.values[0]);
+            yy=Math.round(event.values[1]);
+            zz=Math.round(event.values[2]);
+
+        }
+        else if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            //gData = event.values.clone();
+
+
+            float x = event.values[0];
+
+
+            if (x < primeroX && whip == 0) {
                 whip++;
-                min_x=99;
+                min_x = 99;
 
-            }else if (x>segundoX && whip == 1 ){//&& event.values[1]<-5){
+                //getWindow().getDecorView().setBackgroundColor(Color.BLUE);
+            } else if (x > segundoX && whip == 1) {//&& event.values[1]<-5){
                 whip++;
                 timestamp_uno = System.currentTimeMillis();
-                x_uno=x;
-                z_uno=z;
-                whip2=0;
+                x_uno = x;
+                whip2 = 0;
 
-            }else
-            if(whip==2)
-            {
-                fuerza = x-x_uno/(System.currentTimeMillis()-timestamp_uno);
-                txt_mAzimuth.setText(""+x+"\n"+z );
-                if(Math.abs(Math.abs(x)-Math.abs(x_uno))>Math.abs(Math.abs(z)-Math.abs(z_uno))){
+                //getWindow().getDecorView().setBackgroundColor(Color.RED);
+            } else if (whip == 2) {
+                fuerza = x - x_uno / (System.currentTimeMillis() - timestamp_uno);
+                txt_mAzimuth.setText("" + xx + "," + yy+","+zz);
+                //if(min_x<-15) {
 
-                    if (izq<0)
-                        izq1();
-                    else
-                        der1();
-                }else{
+                    if (izq < 0) {
+                        if(compararIzq==0)
+                        {
+                           if(Math.abs( Math.abs(xx)-Math.abs(calibrado_izq1x)) <Math.abs( Math.abs(xx)-Math.abs(calibrado_izq2x)))
+                            izq1();
+                           else
+                               izq2();
+                        }
+                        if(compararIzq==1)
+                        {
+                            if(Math.abs( Math.abs(yy)-Math.abs(calibrado_izq1y)) <Math.abs( Math.abs(yy)-Math.abs(calibrado_izq2y)))
+                                izq1();
+                            else
+                                izq2();
+                        }
+                        if(compararIzq==2)
+                        {
+                            if(Math.abs( Math.abs(zz)-Math.abs(calibrado_izq1z)) <Math.abs( Math.abs(zz)-Math.abs(calibrado_izq2z)))
+                                izq1();
+                            else
+                                izq2();
+                        }
+                    }
+                    else {
+                        if(compararDer==0)
+                        {
+                            if(Math.abs( Math.abs(xx)-Math.abs(calibrado_der1x)) <Math.abs( Math.abs(xx)-Math.abs(calibrado_der2x)))
+                                der1();
+                            else
+                                der2();
+                        }
+                        if(compararDer==1)
+                        {
+                            if(Math.abs( Math.abs(yy)-Math.abs(calibrado_der1y)) <Math.abs( Math.abs(yy)-Math.abs(calibrado_der2y)))
+                                der1();
+                            else
+                                der2();
+                        }
+                        if(compararDer==2)
+                        {
+                            if(Math.abs( Math.abs(zz)-Math.abs(calibrado_der1z)) <Math.abs( Math.abs(zz)-Math.abs(calibrado_der2z)))
+                                der1();
+                            else
+                                der2();
+                        }
+                    }
 
-                    if (izq<0)
-                        izq2();
-                    else
-                        der2();
-                }
 
                 whip++;
-                whip2=0;
+                whip2 = 0;
 
-            } else if(whip==3 && x<terceroX)
-            {
-                whip=0;
-                whip2=0;
-                min_z=99;
-                min_x=99;
+            } else if (whip == 3 && x < terceroX) {
+                whip = 0;
+                whip2 = 0;
+                min_z = 99;
+                min_x = 99;
             }
-
-
-        if(z>primeroZ && whip2 == 0){
-            whip2++;
-            min_z=99;
-        }else if (z<segundoZ && whip2 == 1 ){
-            whip2++;
-            timestamp_dos = System.currentTimeMillis();
-            z_uno=z;
-            whip=0;
-            x_uno=x;
-
-        }else
-        if(whip2==2)
-        {
-            fuerza = z-z_uno/(System.currentTimeMillis()-timestamp_dos);
-            txt_mAzimuth.setText(""+x+"\n"+z );
-
-            if(Math.abs(Math.abs(x)-Math.abs(x_uno))>Math.abs(Math.abs(z)-Math.abs(z_uno))){
-                if (izq<0)
-                    izq1();
-                else
-                    der1();
-            }else{
-            if (izq<0)
-                izq2();
-            else
-                der2();
-            }
-            whip2++;
-            whip=0;
-
-        }else if(whip2==3 && z>terceroZ)
-        {
-            whip=0;
-            whip2=0;
-            min_z=99;
-            min_x=99;
         }
 
-        if(whip==1 && min_x>x)min_x=x;
-        if(whip2==1 && min_z>z)min_z=z;
 
-
-
-    }
+    }*/
 
 void calculaNumeros()
 {
@@ -405,9 +550,9 @@ void calculaNumeros()
     segundoX=6+sensibilidad;
     terceroX=6+sensibilidad;
 
-    primeroZ=8+sensibilidad;
-    segundoZ=-10-sensibilidad;
-    terceroZ=-10-sensibilidad;
+    primeroZ=-8-sensibilidad;
+    segundoZ=10+sensibilidad;
+    terceroZ=10+sensibilidad;
 
 }
 
@@ -505,7 +650,8 @@ void calculaNumeros()
                 packet_pie_der = new DatagramPacket("6".getBytes(), "6".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
                 packet_pie_izq_pulsado = new DatagramPacket("7".getBytes(), "7".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
                 packet_pie_izq_no_pulsado = new DatagramPacket("8".getBytes(), "8".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-
+                packet_der3 = new DatagramPacket("9".getBytes(), "9".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
+                packet_izq3 = new DatagramPacket("0".getBytes(), "0".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
 
 
 
@@ -515,4 +661,264 @@ void calculaNumeros()
         }
     }
 
+private void afterCalibrate()
+{
+    alertDialogAndroid.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+
+
+    double diff_izqx=Math.abs(Math.abs(calibrado_izq1x)-Math.abs(calibrado_izq2x));
+    double diff_izqy=Math.abs(Math.abs(calibrado_izq1y)-Math.abs(calibrado_izq2y));
+    double diff_izqz=Math.abs(Math.abs(calibrado_izq1z)-Math.abs(calibrado_izq2z));
+
+    if (diff_izqx >= diff_izqy && diff_izqx >= diff_izqz)
+        compararIzq=0;
+    else if (diff_izqy >= diff_izqx && diff_izqy >= diff_izqz)
+        compararIzq=1;
+    else
+        compararIzq=2;
+
+
+    double diff_derx=Math.abs(Math.abs(calibrado_der1x)-Math.abs(calibrado_der2x));
+    double diff_dery=Math.abs(Math.abs(calibrado_der1y)-Math.abs(calibrado_der2y));
+    double diff_derz=Math.abs(Math.abs(calibrado_der1z)-Math.abs(calibrado_der2z));
+
+    if (diff_derx >= diff_dery && diff_derx >= diff_derz)
+        compararDer=0;
+    else if (diff_dery >= diff_derx && diff_dery >= diff_derz)
+        compararDer=1;
+    else
+        compararDer=2;
+
+
+}
+
+
+void construirChecks()
+{
+
+
+    CheckBox calibrar_der1 = ( CheckBox ) mView.findViewById( R.id.calibrar_der1 );
+    calibrar_der1.setOnClickListener(new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+
+            if (((CheckBox) v).isChecked()) {
+                calibrado_der1x=xx;
+                calibrado_der1y=yy;
+                calibrado_der1z=zz;
+            }
+            else
+            {
+                calibrado_der1x=-9999;
+                calibrado_der1y=-9999;
+                calibrado_der1z=-9999;
+            }
+            if(calibrado_der1x>-9998 && calibrado_der2x>-9998 &&calibrado_izq1x>-9998 &&calibrado_izq2x>-9998)
+            {
+                afterCalibrate();
+
+            }
+        }
+
+
+    });
+    CheckBox calibrar_der2 = ( CheckBox ) mView.findViewById( R.id.calibrar_der2 );
+    calibrar_der2.setOnClickListener(new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+
+            if (((CheckBox) v).isChecked()) {
+                calibrado_der2x=xx;
+                calibrado_der2y=yy;
+                calibrado_der2z=zz;
+            }
+            else
+            {
+                calibrado_der2x=-9999;
+                calibrado_der2y=-9999;
+                calibrado_der2z=-9999;
+            }
+            if(calibrado_der1x>-9998 && calibrado_der2x>-9998 &&calibrado_izq1x>-9998 &&calibrado_izq2x>-9998)
+            {
+                afterCalibrate();
+
+            }
+        }
+    });
+    CheckBox calibrar_izq1 = ( CheckBox ) mView.findViewById( R.id.calibrar_izq1 );
+    calibrar_izq1.setOnClickListener(new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+
+            if (((CheckBox) v).isChecked()) {
+                calibrado_izq1x=xx;
+                calibrado_izq1y=yy;
+                calibrado_izq1z=zz;
+            }
+            else
+            {
+                calibrado_izq1x=-9999;
+                calibrado_izq1y=-9999;
+                calibrado_izq1z=-9999;
+            }
+            if(calibrado_der1x>-9998 && calibrado_der2x>-9998 &&calibrado_izq1x>-9998 &&calibrado_izq2x>-9998)
+            {
+                afterCalibrate();
+
+            }
+        }
+    });
+    CheckBox calibrar_izq2 = ( CheckBox ) mView.findViewById( R.id.calibrar_izq2 );
+    calibrar_izq2.setOnClickListener(new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+
+            if (((CheckBox) v).isChecked()) {
+                calibrado_izq2x=xx;
+                calibrado_izq2y=yy;
+                calibrado_izq2z=zz;
+            }
+            else
+            {
+                calibrado_izq2x=-9999;
+                calibrado_izq2y=-9999;
+                calibrado_izq2z=-9999;
+            }
+            if(calibrado_der1x>-9998 && calibrado_der2x>-9998 &&calibrado_izq1x>-9998 &&calibrado_izq2x>-9998)
+            {
+                afterCalibrate();
+
+            }
+        }
+    });
+
+
+}
+
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        float orientation[] = new float[3];
+
+
+
+            float x = event.values[0];
+        float z = event.values[2];
+        if(!sonando1 && !sonando2 && !sonando3) {
+            if (x > 20 + sensibilidad) {
+                sonando1 = true;
+                v.vibrate(50);
+                if(izq==1)
+                 der3();
+                else
+                    izq3();
+            } else if (z < -20 - sensibilidad) {
+                v.vibrate(50);
+
+                sonando2 = true;
+                if(izq==1)
+                der1();
+                else
+                    izq1();
+            } else if (z > 20 + sensibilidad) {
+                v.vibrate(50);
+
+                sonando3 = true;
+                if(izq==1)
+                der2();
+                else
+                    izq2();
+            }
+        }
+        if(sonando1 && x<20+sensibilidad)
+            sonando1=false;
+        if(sonando2 && z>-20-sensibilidad)
+            sonando2=false;
+        if(sonando3 && z<20+sensibilidad)
+            sonando3=false;
+
+/*
+            if (x < primeroX && whip == 0) {
+                whip++;
+                min_x = 99;
+
+                //getWindow().getDecorView().setBackgroundColor(Color.BLUE);
+            } else if (x > segundoX && whip == 1) {//&& event.values[1]<-5){
+                whip++;
+                timestamp_uno = System.currentTimeMillis();
+                x_uno = x;
+                whip2 = 0;
+
+                //getWindow().getDecorView().setBackgroundColor(Color.RED);
+            } else if (whip == 2) {
+                fuerza = x - x_uno / (System.currentTimeMillis() - timestamp_uno);
+                txt_mAzimuth.setText("" + xx + "," + yy+","+zz);
+                //if(min_x<-15) {
+
+                if (izq < 0) {
+                    if(compararIzq==0)
+                    {
+                        if(Math.abs( Math.abs(xx)-Math.abs(calibrado_izq1x)) <Math.abs( Math.abs(xx)-Math.abs(calibrado_izq2x)))
+                            izq1();
+                        else
+                            izq2();
+                    }
+                    if(compararIzq==1)
+                    {
+                        if(Math.abs( Math.abs(yy)-Math.abs(calibrado_izq1y)) <Math.abs( Math.abs(yy)-Math.abs(calibrado_izq2y)))
+                            izq1();
+                        else
+                            izq2();
+                    }
+                    if(compararIzq==2)
+                    {
+                        if(Math.abs( Math.abs(zz)-Math.abs(calibrado_izq1z)) <Math.abs( Math.abs(zz)-Math.abs(calibrado_izq2z)))
+                            izq1();
+                        else
+                            izq2();
+                    }
+                }
+                else {
+                    if(compararDer==0)
+                    {
+                        if(Math.abs( Math.abs(xx)-Math.abs(calibrado_der1x)) <Math.abs( Math.abs(xx)-Math.abs(calibrado_der2x)))
+                            der1();
+                        else
+                            der2();
+                    }
+                    if(compararDer==1)
+                    {
+                        if(Math.abs( Math.abs(yy)-Math.abs(calibrado_der1y)) <Math.abs( Math.abs(yy)-Math.abs(calibrado_der2y)))
+                            der1();
+                        else
+                            der2();
+                    }
+                    if(compararDer==2)
+                    {
+                        if(Math.abs( Math.abs(zz)-Math.abs(calibrado_der1z)) <Math.abs( Math.abs(zz)-Math.abs(calibrado_der2z)))
+                            der1();
+                        else
+                            der2();
+                    }
+                }
+
+
+                whip++;
+                whip2 = 0;
+
+            } else if (whip == 3 && x < terceroX) {
+                whip = 0;
+                whip2 = 0;
+                min_z = 99;
+                min_x = 99;
+            }
+
+*/
+
+    }
 }

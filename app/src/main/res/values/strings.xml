@@ -11,4 +11,5 @@
     <string name="volver">Volver</string>
     <string name="titulo_sensibilidad">Sensibilidad: %1$d</string>
     <string name="sensibilidad_inicial">Sensibilidad: 1</string>
+    <string name="calibrar">calibrar</string>
 </resources>
