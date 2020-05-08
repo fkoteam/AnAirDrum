@@ -6,39 +6,39 @@
     android:keepScreenOn="true">
 
     <TextView
-        android:id="@+id/txt_progresoX"
+        android:id="@+id/txt_progresoA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_x"
         android:textSize="20sp"
-        android:layout_above="@id/seekBarX"/>
+        android:layout_above="@id/seekBarA"/>
     <TextView
-        android:id="@+id/txt_progresoY"
+        android:id="@+id/txt_progresoB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_y"
         android:textSize="20sp"
-        android:layout_above="@id/seekBarY"/>
+        android:layout_above="@id/seekBarB"/>
     <TextView
-        android:id="@+id/txt_progresoZ"
+        android:id="@+id/txt_progresoC"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_z"
         android:textSize="20sp"
-        android:layout_above="@id/seekBarZ"/>
+        android:layout_above="@id/seekBarC"/>
     <TextView
         android:id="@+id/txt_mAzimuth"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="30sp"
+        android:textSize="15sp"
         android:layout_centerHorizontal="true"
         />
 
@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:id="@+id/radioGroup"
-        android:layout_above="@id/txt_progresoX"
+        android:layout_above="@id/txt_progresoA"
         >
 
         <RadioButton
@@ -83,7 +83,7 @@
     </RadioGroup>
 
     <SeekBar
-        android:id="@+id/seekBarX"
+        android:id="@+id/seekBarA"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -92,21 +92,21 @@
         android:layout_centerVertical="true"
         android:max="29"
         android:progress="0"
-        android:layout_above="@id/txt_progresoY"/>
+        android:layout_above="@id/txt_progresoB"/>
     <SeekBar
-        android:id="@+id/seekBarY"
+        android:id="@+id/seekBarB"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_above="@id/txt_progresoZ"
+        android:layout_above="@id/txt_progresoC"
 
     android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:max="29"
         android:progress="0" />
     <SeekBar
-        android:id="@+id/seekBarZ"
+        android:id="@+id/seekBarC"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

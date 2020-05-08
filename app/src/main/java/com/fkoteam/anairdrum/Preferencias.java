@@ -21,9 +21,11 @@ public class Preferencias {
     public static final String OFFLINE = "IS_ONLINE";
     public static final String CLIENTE = "IS_CLIENTE";
     public static final String MODO = "";
-    public static final String SENSIBILIDADX = "1";
-    public static final String SENSIBILIDADY = "1";
-    public static final String SENSIBILIDADZ = "1";
+    public static final String SENSIBILIDADA = "SENSIBILIDADA";
+    public static final String SENSIBILIDADB = "SENSIBILIDADB";
+    public static final String SENSIBILIDADC = "SENSIBILIDADC";
+    public static final String NO_GRAVITY = "NO_GRAVITY";
+
 
 
     private static SharedPreferences mSharedPref;

@@ -17,4 +17,5 @@
     <string name="izquierda">izquierda</string>
     <string name="centro">centro</string>
     <string name="derecha">derecha</string>
+    <string name="no_usar_sensor_gravity">No Usar Sensor Gravity</string>
 </resources>

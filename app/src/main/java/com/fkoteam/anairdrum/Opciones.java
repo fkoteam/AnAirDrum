@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -21,7 +22,9 @@ import java.util.Objects;
 public class Opciones extends AppCompatActivity {
     public static boolean offline = true;
     public static boolean cliente = true;
+    public static boolean no_gravity = false;
     RadioGroup radioGroupOffline, radioGroupCliente;
+    CheckBox check_no_gravity;
     public static int puerto = 7001;
     public static String ipServidor = "192.168.1.1";
 
@@ -34,6 +37,7 @@ public class Opciones extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         radioGroupOffline = findViewById(R.id.offline_online);
         radioGroupCliente = findViewById(R.id.cliente_servidor);
+        check_no_gravity = findViewById(R.id.checkBoxGravity);
 
 
         String ip = getLocalIpAddress();
@@ -110,8 +114,11 @@ public class Opciones extends AppCompatActivity {
 
         offline = radioGroupOffline.getCheckedRadioButtonId() == findViewById(R.id.offline).getId();
         cliente = radioGroupCliente.getCheckedRadioButtonId() == findViewById(R.id.cliente).getId();
+        no_gravity=check_no_gravity.isChecked();
         Preferencias.write(Preferencias.OFFLINE, offline);//save string in shared preference.
         Preferencias.write(Preferencias.CLIENTE, cliente);//save int in shared preference.
+        Preferencias.write(Preferencias.NO_GRAVITY, no_gravity);//save int in shared preference.
+
         visibilidad();
     }
 
@@ -125,6 +132,8 @@ public class Opciones extends AppCompatActivity {
             radioGroupCliente.check(R.id.servidor);
         if(!offline)
             radioGroupOffline.check(R.id.online);
+        if(no_gravity)
+            check_no_gravity.setChecked(true);
     }
 
     private void visibilidad()

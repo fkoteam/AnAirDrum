@@ -100,6 +100,7 @@
 
         />
 
+
     <EditText
         android:id="@+id/ip_servidor"
         android:layout_width="132dp"
@@ -124,5 +125,13 @@
         android:layout_marginTop="15dp"
 
         />
+
+    <CheckBox
+        android:id="@+id/checkBoxGravity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_usar_sensor_gravity"
+        android:layout_below="@id/txt_ip"
+        android:onClick="checkButton"/>
 
 </RelativeLayout>
