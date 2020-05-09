@@ -9,13 +9,13 @@
     <string name="pedal_derecho">Pedal derecho</string>
     <string name="pedal_izquierdo">Pedal izquierdo</string>
     <string name="volver">Volver</string>
-    <string name="titulo_sensibilidad">Sensibilidad %1$s: %2$d</string>
+    <string name="titulo_sensibilidad">Ajuste %1$s: %2$d</string>
     <string name="calibrar">calibrar</string>
-    <string name="sensibilidad_inicial_x">Sensibilidad izquierda: 1</string>
-    <string name="sensibilidad_inicial_y">Sensibilidad centro: 1</string>
-    <string name="sensibilidad_inicial_z">Sensibilidad derecha: 1</string>
-    <string name="izquierda">izquierda</string>
+    <string name="sensibilidad_inicial_x">Ajuste lado izquierdo: 1</string>
+    <string name="sensibilidad_inicial_y">Ajuste centro: 1</string>
+    <string name="sensibilidad_inicial_z">Ajuste lado derecho: 1</string>
+    <string name="izquierda">lado izquierdo</string>
     <string name="centro">centro</string>
-    <string name="derecha">derecha</string>
+    <string name="derecha">lado derecho</string>
     <string name="no_usar_sensor_gravity">No Usar Sensor Gravity</string>
 </resources>

@@ -12,7 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_x"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_above="@id/seekBarA"/>
     <TextView
         android:id="@+id/txt_progresoB"
@@ -21,7 +21,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_y"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_above="@id/seekBarB"/>
     <TextView
         android:id="@+id/txt_progresoC"
@@ -30,7 +30,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_z"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_above="@id/seekBarC"/>
     <TextView
         android:id="@+id/txt_mAzimuth"

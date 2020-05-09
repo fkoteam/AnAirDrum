@@ -380,6 +380,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Opciones.puerto = Preferencias.read(Preferencias.PUERTO, Opciones.puerto);//read string in shared preference.
         Opciones.ipServidor = Preferencias.read(Preferencias.IP_SERVIDOR, Opciones.ipServidor);//read string in shared preference.
         int check = Preferencias.read(Preferencias.MODO, R.id.mano_der);
+        if(check!=R.id.mano_der && check !=R.id.mano_izq && check !=R.id.pie_der && check !=R.id.pie_izq) {
+            check = R.id.mano_der;
+            Preferencias.write(Preferencias.MODO, check);//save string in shared preference.
+
+        }
+
         radioGroup.check(check);
         gestionaCheck(check);//read string in shared preference);
         construirDatagram();
