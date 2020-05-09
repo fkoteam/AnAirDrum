@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,6 +72,8 @@ public class MediaPlayers {
         soundpool.play(pie_izq_cer, 1f, 1f, 1, 0, 1f);
         for(Integer i : list_der1op) {
             soundpool.stop(i.intValue());
+            System.out.println("parando"+i.intValue());
+
 
         }
 
@@ -80,7 +83,10 @@ public class MediaPlayers {
 
     public void der1_op() {
         if(pie_izq_pulsado) {
-            list_der1op.add(new Integer(soundpool.play(der1op, 1f, 1f, 1, 0, 1f)));
+            Integer i=new Integer(soundpool.play(der1op, 1f, 1f, 1, 0, 1f));
+            list_der1op.add(i);
+            System.out.println("arrancando"+i.intValue());
+
         }
         else
         {
