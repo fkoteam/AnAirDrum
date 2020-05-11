@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">An Air Drum</string>
+    <string name="version">Versión 1.0</string>
+
     <string name="pedal_offline">El pedal izquierdo solo puede usarse en modo online</string>
     <string name="ip_de_dispositivo">Ip de este dispositivo: %1$s</string>
     <string name="no_wifi">No wifi</string>
@@ -17,5 +19,15 @@
     <string name="izquierda">lado izquierdo</string>
     <string name="centro">centro</string>
     <string name="derecha">lado derecho</string>
-    <string name="no_usar_sensor_gravity">No Usar Sensor Gravity</string>
+    <string name="no_usar_sensor_gravity">No usar el sensor de gravedad</string>
+    <string name="no_vibra">Sin vibración</string>
+    <string name="usando_gravedad">Usando el sensor de gravedad.</string>
+    <string name="no_usando_gravedad">Sin usar el sensor de gravedad.</string>
+
+    <string name="aviso_cliente"> Estás en modo cliente (sólo sonará el dispositivo servidor).</string>
+    <string name="si">SÍ</string>
+    <string name="no">NO</string>
+    <string name="modo_thread">Usar threads (desarrollo)</string>
+
+
 </resources>

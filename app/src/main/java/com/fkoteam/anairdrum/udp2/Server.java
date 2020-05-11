@@ -16,11 +16,21 @@ import com.fkoteam.anairdrum.MediaPlayers;
 public class Server extends Thread {
 
     private DatagramSocket server;
-    private final MediaPlayers mediaPlayers;
+    /*private  MediaPlayers mediaPlayers;
+
+public void setMediaPlayer(MediaPlayers mp)
+{
+    mediaPlayers=mp;
+
+}*/
+    public void changePort(int puerto) throws IOException
+    {
+        server = new DatagramSocket(puerto);
 
 
-    public Server(int puerto,MediaPlayers mp) throws IOException {
-        mediaPlayers=mp;
+    }
+    public Server(int puerto/*,MediaPlayers mp*/) throws IOException {
+       // mediaPlayers=mp;
 
         server = new DatagramSocket(puerto);
     }
@@ -43,49 +53,49 @@ public class Server extends Thread {
 
 
                     if ("6".equals(recibido)) {
-
-                        mediaPlayers.pie_der();
+MainActivity.mediaplayers.pie_der();
+                      //  mediaPlayers.pie_der();
 
                     } else if ("4".equals(recibido)) {
 
-                        mediaPlayers.izq1();
+                        MainActivity.mediaplayers.izq1();
 
                     } else if ("5".equals(recibido)) {
 
-                        mediaPlayers.izq2();
+                        MainActivity.mediaplayers.izq2();
 
                     } else if ("1".equals(recibido)) {
 
-                        mediaPlayers.der1_cl();
+                        MainActivity.mediaplayers.der1_cl();
 
                     } else if ("2".equals(recibido)) {
 
-                        mediaPlayers.der1_op();
+                        MainActivity.mediaplayers.der1_op();
 
 
                     } else if ("3".equals(recibido)) {
 
-                        mediaPlayers.der2();
+                        MainActivity.mediaplayers.der2();
 
                     } else if ("7".equals(recibido)) {
-                        mediaPlayers.setPie_izq_pulsado(true);
+                        MainActivity.mediaplayers.setPie_izq_pulsado(true);
                         //pie_izq_pulsado
 
 
                     } else if ("8".equals(recibido)) {
-                        mediaPlayers.setPie_izq_pulsado(false);
-                        mediaPlayers.pie_izq();
+                        MainActivity.mediaplayers.setPie_izq_pulsado(false);
+                        MainActivity.mediaplayers.pie_izq();
                         //pie_izq_no_pulsado
 
                     }
 
                     else if ("9".equals(recibido)) {
-                        mediaPlayers.der3();
+                        MainActivity.mediaplayers.der3();
                         //pie_izq_no_pulsado
 
                     }
                     else if ("0".equals(recibido)) {
-                        mediaPlayers.izq3();
+                        MainActivity.mediaplayers.izq3();
                         //pie_izq_no_pulsado
 
                     }
@@ -100,8 +110,8 @@ public class Server extends Thread {
         }
     }
 
-    private void CloseSocket(DatagramSocket socket) throws IOException {
-        socket.close();
+    public void CloseSocket( )  {
+        server.close();
     }
 
 

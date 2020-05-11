@@ -71,7 +71,7 @@
         android:text="Puerto"
         android:layout_below="@+id/cliente_servidor"
         android:layout_marginTop="10dp"
-        android:paddingRight="30dp"
+        android:paddingRight="35dp"
 
         />
     <EditText
@@ -122,7 +122,8 @@
         android:text="0º"
         android:textSize="20sp"
         android:layout_below="@id/txt_ip_servidor"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="15dp"
 
         />
 
@@ -133,5 +134,31 @@
         android:text="@string/no_usar_sensor_gravity"
         android:layout_below="@id/txt_ip"
         android:onClick="checkButton"/>
+    <CheckBox
+        android:id="@+id/checkBoxVibracion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_vibra"
+        android:layout_below="@id/checkBoxGravity"
+        android:onClick="checkButton"/>
+    <CheckBox
+        android:id="@+id/checkModoThread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/modo_thread"
+        android:layout_below="@id/checkBoxVibracion"
+        android:onClick="checkButton"/>
+
+    <TextView
+        android:id="@+id/txt_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/version"
+        android:layout_below="@+id/checkModoThread"
+        android:layout_marginTop="10dp"
+        android:paddingRight="30dp"
+
+        />
+
 
 </RelativeLayout>

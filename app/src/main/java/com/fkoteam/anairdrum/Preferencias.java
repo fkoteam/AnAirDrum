@@ -25,6 +25,8 @@ public class Preferencias {
     public static final String SENSIBILIDADB = "SENSIBILIDADB";
     public static final String SENSIBILIDADC = "SENSIBILIDADC";
     public static final String NO_GRAVITY = "NO_GRAVITY";
+    public static final String NO_VIBRACION = "NO_VIBRACION";
+
 
 
 

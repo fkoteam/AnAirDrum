@@ -76,7 +76,6 @@ public class MediaPlayers {
 
 
         }
-
         list_der1op.clear();
     }
 

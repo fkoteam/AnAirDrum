@@ -37,8 +37,9 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="dsgsdgsdfgsdf sdgsdfgsdf sdfgsd fgs fgsfs sfgsdfg sdf sdfg sertert wrt wet wert rt "
         android:textSize="15sp"
+        android:layout_margin="5dp"
         android:layout_centerHorizontal="true"
         />
 
