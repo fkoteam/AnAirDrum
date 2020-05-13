@@ -30,6 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fkoteam.anairdrum.udp2.Client;
+import com.fkoteam.anairdrum.udp2.Client2;
 import com.fkoteam.anairdrum.udp2.Server;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     float[] rMat = new float[9];
-    
+
 
 
     SensorManager sensorManager;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     RadioGroup radioGroup;
     DatagramPacket packet_izq1, packet_izq2, packet_izq3, packet_der1cl, packet_der1op, packet_der2, packet_der3, packet_pie_der, packet_pie_izq_pulsado, packet_pie_izq_no_pulsado;
     com.fkoteam.anairdrum.udp.Client cl_izq1, cl_izq2, cl_izq3, cl_der1cl, cl_der1op, cl_der2, cl_der3, cl_pie_der, cl_pie_izq_pulsado, cl_pie_izq_no_pulsado;
-
+    Client2 clienteUDP;
 
 
      public static MediaPlayers mediaplayers;
@@ -264,12 +265,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
        try {
             if (!Opciones.cliente && chatserver == null && !Opciones.offline) {
-                if(chatserver==null) {
+
                     chatserver = new Server(Opciones.puerto);
                     chatserver.start();
-                }
+
 
             }
+           if (Opciones.cliente && clienteUDP == null && !Opciones.offline) {
+
+                   clienteUDP = new Client2();
+               clienteUDP.start();
+
+
+           }
 
         } catch (IOException e) {
             //e.printStackTrace();
@@ -311,7 +319,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         } else {
             if(Opciones.modo_thread)
-                new Client(packet_der1op).start();
+                clienteUDP.enviar(packet_der1op);
+           /* {
+                synchronized(clienteUDP){
+                    try{
+                        System.out.println("Waiting for b to complete...");
+                        clienteUDP.wait();
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+
+                    clienteUDP.enviar(packet_der1op);
+                }
+              //  synchronized(clienteUDP){
+            //        clienteUDP.notifyAll();
+
+            //    }
+
+                //new Client(packet_der1op).start();
+            }*/
             else
                 cl_der1op.enviar();
         }
@@ -325,7 +351,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         } else
         if(Opciones.modo_thread)
-           new Client(packet_der2).start();
+            clienteUDP.enviar(packet_der1op);
+/*{
+           // synchronized(clienteUDP){
+         //       clienteUDP.notifyAll();
+
+            synchronized(clienteUDP){
+                try{
+                    System.out.println("Waiting for b to complete...");
+                    clienteUDP.wait();
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+
+                clienteUDP.enviar(packet_der1op);
+            }
+         //   }
+            //clienteUDP.notify();
+            //new Client(packet_der2).start();
+          //  clienteUDP.enviar(packet_der2);
+        }*/
+
         else
             cl_der2.enviar();
 
@@ -338,7 +384,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         } else
         if(Opciones.modo_thread)
-            new Client(packet_der3).start();
+            clienteUDP.enviar(packet_der1op);
+
+        //new Client(packet_der3).start();
+           // synchronized(clienteUDP){
+                //clienteUDP.notifyAll();
+            /*synchronized(clienteUDP){
+                try{
+                    System.out.println("Waiting for b to complete...");
+                    clienteUDP.wait();
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+
+                clienteUDP.enviar(packet_der1op);
+            }
+
+          //  }
+        }*/
+
         else
             cl_der3.enviar();
 
@@ -402,6 +466,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 chatserver.interrupt();
             }
         }
+        if (clienteUDP != null) {
+            if (!clienteUDP.isInterrupted()) {
+                clienteUDP.interrupt();
+            }
+        }
 
     }
 
@@ -455,6 +524,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     chatserver = new Server(Opciones.puerto);
                     chatserver.start();
+
+            }
+            if (Opciones.cliente && !Opciones.offline) {
+
+                clienteUDP = new Client2();
+                clienteUDP.start();
 
             }
 
@@ -665,6 +740,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     }
+
+
+
 
 
 }
