@@ -40,6 +40,8 @@ import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     float[] rMat = new float[9];
+    
+
 
     SensorManager sensorManager;
     private Sensor mAccelerometer;

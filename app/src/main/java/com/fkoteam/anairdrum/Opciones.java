@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -75,6 +77,8 @@ public class Opciones extends AppCompatActivity {
 
 
         ipServidorEdit =  findViewById(R.id.ip_servidor);
+        ipServidorEdit.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
+        ipServidorEdit.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 
         ipServidorEdit.addTextChangedListener(new TextWatcher() {
 
@@ -182,5 +186,11 @@ public class Opciones extends AppCompatActivity {
                 findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 }
