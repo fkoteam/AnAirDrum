@@ -120,8 +120,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (mediaplayers == null)
             mediaplayers = new MediaPlayers(getApplicationContext());
 
-        /*TODO
-        */
+        
           /*  solo para log de la respuesta
           BufferedReader in =
                     new BufferedReader( new InputStreamReader( socket.getInputStream() ) );*/
