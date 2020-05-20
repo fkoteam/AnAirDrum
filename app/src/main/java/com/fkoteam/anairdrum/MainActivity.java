@@ -3,6 +3,7 @@ package com.fkoteam.anairdrum;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Path;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -29,19 +30,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fkoteam.anairdrum.udp2.Client;
-import com.fkoteam.anairdrum.udp2.Client2;
-import com.fkoteam.anairdrum.udp2.Server;
+import com.fkoteam.anairdrum.tcp.ClientTcp;
+import com.fkoteam.anairdrum.tcp.ServerTcp;
+import com.fkoteam.anairdrum.udp.ClientAsync;
+import com.fkoteam.anairdrum.udp.ClientThread;
+import com.fkoteam.anairdrum.udp.ServerUdp;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     float[] rMat = new float[9];
-
 
 
     SensorManager sensorManager;
@@ -49,19 +52,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView txt_mAzimuth;
     RadioGroup radioGroup;
     DatagramPacket packet_izq1, packet_izq2, packet_izq3, packet_der1cl, packet_der1op, packet_der2, packet_der3, packet_pie_der, packet_pie_izq_pulsado, packet_pie_izq_no_pulsado;
-    com.fkoteam.anairdrum.udp.Client cl_izq1, cl_izq2, cl_izq3, cl_der1cl, cl_der1op, cl_der2, cl_der3, cl_pie_der, cl_pie_izq_pulsado, cl_pie_izq_no_pulsado;
-    Client2 clienteUDP;
+    ClientAsync cl_izq1, cl_izq2, cl_izq3, cl_der1cl, cl_der1op, cl_der2, cl_der3, cl_pie_der, cl_pie_izq_pulsado, cl_pie_izq_no_pulsado;
+    ClientThread clienteUDP;
+    ClientTcp clienteTCP;
 
 
-     public static MediaPlayers mediaplayers;
+    public static MediaPlayers mediaplayers;
 
 
-            Server chatserver;
-
+    ServerUdp chatserver;
+    ServerTcp serverTcp;
 
 
     Vibrator v;
-    boolean arriba=true;
+    boolean arriba = true;
 
 
     int compararDer = -1;
@@ -70,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     double fuerza;
-    boolean haveSensor = false,haveGravity = false;
-    DatagramSocket socket = null;
+    boolean haveSensor = false, haveGravity = false;
 
 
     double min_z = 99;
@@ -105,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean mUseRotationVectorSensor = false;
     private double mAzimuth;
     AlertDialog alertDialogAndroid;
+    public static DataOutputStream out;
+
 
 
     @Override
@@ -112,8 +117,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Preferencias.init(getApplicationContext());
-        if(mediaplayers==null)
+        if (mediaplayers == null)
             mediaplayers = new MediaPlayers(getApplicationContext());
+
+        /*TODO
+        */
+          /*  solo para log de la respuesta
+          BufferedReader in =
+                    new BufferedReader( new InputStreamReader( socket.getInputStream() ) );*/
+
+
 
         construirDatagram();
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -126,10 +139,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (!Opciones.cliente || Opciones.offline)
                     mediaplayers.pie_der();
                 else
-                    if(Opciones.modo_thread)
-                        new Client(packet_pie_der).start();
+                {
+                    if (Opciones.modo_tcp) {
+                            clienteTCP.enviar("6");
+                    }
                     else
-                        cl_pie_der.enviar();
+                    {
+                        if (Opciones.modo_thread)
+                            //new Client(packet_pie_der).start();
+                            clienteUDP.enviar(packet_pie_der);
+                        else
+                            cl_pie_der.enviar();
+                    }
+                }
 
 
             }
@@ -149,10 +171,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         mediaplayers.setPie_izq_pulsado(true);
 
                         if (Opciones.cliente)
-                            if(Opciones.modo_thread)
-                                new Client(packet_pie_izq_pulsado).start();
-                            else
-                                cl_pie_izq_pulsado.enviar();
+                        {
+                            if (Opciones.modo_tcp)
+                                clienteTCP.enviar("7");
+                            else {
+                                if (Opciones.modo_thread)
+                                    //new Client(packet_pie_izq_pulsado).start();
+                                    clienteUDP.enviar(packet_pie_izq_pulsado);
+                                else
+                                    cl_pie_izq_pulsado.enviar();
+                            }
+                        }
+
 
                     }
                     if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -160,10 +190,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         if (!Opciones.cliente) {
                             mediaplayers.pie_izq();
                         } else
-                        if(Opciones.modo_thread)
-                            new Client(packet_pie_izq_no_pulsado).start();
-                        else
-                            cl_pie_izq_no_pulsado.enviar();
+                        {
+                            if (Opciones.modo_tcp)
+                                clienteTCP.enviar("8");
+                            else {
+                                if (Opciones.modo_thread)
+                                    //new Client(packet_pie_izq_no_pulsado).start();
+                                    clienteUDP.enviar(packet_pie_izq_no_pulsado);
+                                else
+                                    cl_pie_izq_no_pulsado.enviar();
+                            }
+
+                        }
                     }
 
                 }
@@ -175,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         final Button volver = findViewById(R.id.volver);
         volver.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Code here executes on main thread after user presses button
                 izq = 1;
                 //calculaNumeros();
                 findViewById(R.id.volver).setVisibility(View.GONE);
@@ -263,25 +300,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
 
-       try {
+      /*solo en onresume try {
             if (!Opciones.cliente && chatserver == null && !Opciones.offline) {
+                if(Opciones.modo_tcp && serverTcp==null)
+                {
+                    System.out.println("puertooo2 "+Opciones.puerto);
+
+                    serverTcp = new ServerTcp(Opciones.puerto);
+                    serverTcp.start();
+                }
+                if(!Opciones.modo_tcp && chatserver==null)
+
+                {
+                    System.out.println("puertooo3 "+Opciones.puerto);
 
                     chatserver = new Server(Opciones.puerto);
-                    chatserver.start();
-
+               chatserver.start();
+           }
 
             }
-           if (Opciones.cliente && clienteUDP == null && !Opciones.offline) {
-
-                   clienteUDP = new Client2();
+           if (Opciones.cliente && clienteUDP == null && !Opciones.offline && !Opciones.modo_tcp) {
+               clienteUDP = new Client2();
                clienteUDP.start();
+           }
+               if (Opciones.cliente && clienteTCP == null && !Opciones.offline && Opciones.modo_tcp) {
+                   clienteTCP = new ClientTcp(Opciones.ipServidor,Opciones.puerto);
+                   clienteTCP.start();
 
 
            }
 
         } catch (IOException e) {
             //e.printStackTrace();
-        }
+        }*/
 
     }
 
@@ -290,10 +341,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (!Opciones.cliente || Opciones.offline) {
             mediaplayers.izq1();
         } else
-        if(Opciones.modo_thread)
-            new Client(packet_izq1).start();
-        else
-            cl_izq1.enviar();
+        {
+            if (Opciones.modo_tcp)
+                clienteTCP.enviar("4");
+            else
+            {
+                if (Opciones.modo_thread)
+
+                    //new Client(packet_izq1).start();
+                    clienteUDP.enviar(packet_izq1);
+                else
+                    cl_izq1.enviar();
+            }
+        }
 
 
     }
@@ -302,10 +362,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (!Opciones.cliente || Opciones.offline) {
             mediaplayers.izq2();
         } else
-        if(Opciones.modo_thread)
-            new Client(packet_izq2).start();
-        else
-            cl_izq2.enviar();
+        {
+            if (Opciones.modo_tcp)
+                clienteTCP.enviar("5");
+            else
+            {
+                if (Opciones.modo_thread)
+                    //new Client(packet_izq2).start();
+                    clienteUDP.enviar(packet_izq2);
+                else
+                    cl_izq2.enviar();
+            }
+        }
 
     }
 
@@ -318,28 +386,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mediaplayers.der1_cl();
 
         } else {
-            if(Opciones.modo_thread)
-                clienteUDP.enviar(packet_der1op);
-           /* {
-                synchronized(clienteUDP){
-                    try{
-                        System.out.println("Waiting for b to complete...");
-                        clienteUDP.wait();
-                    }catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-
-                    clienteUDP.enviar(packet_der1op);
-                }
-              //  synchronized(clienteUDP){
-            //        clienteUDP.notifyAll();
-
-            //    }
-
-                //new Client(packet_der1op).start();
-            }*/
+            if (Opciones.modo_tcp)
+                clienteTCP.enviar("2");
             else
-                cl_der1op.enviar();
+            {
+                if (Opciones.modo_thread)
+                    clienteUDP.enviar(packet_der1op);
+                else
+                    cl_der1op.enviar();
+            }
         }
 
 
@@ -350,61 +405,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mediaplayers.der2();
 
         } else
-        if(Opciones.modo_thread)
-            clienteUDP.enviar(packet_der1op);
-/*{
-           // synchronized(clienteUDP){
-         //       clienteUDP.notifyAll();
+        {
+            if (Opciones.modo_tcp)
+                clienteTCP.enviar("3");
+            else
+            {
+                if (Opciones.modo_thread)
+                    clienteUDP.enviar(packet_der2);
 
-            synchronized(clienteUDP){
-                try{
-                    System.out.println("Waiting for b to complete...");
-                    clienteUDP.wait();
-                }catch(InterruptedException e){
-                    e.printStackTrace();
-                }
 
-                clienteUDP.enviar(packet_der1op);
+                else
+                    cl_der2.enviar();
             }
-         //   }
-            //clienteUDP.notify();
-            //new Client(packet_der2).start();
-          //  clienteUDP.enviar(packet_der2);
-        }*/
-
-        else
-            cl_der2.enviar();
+        }
 
 
     }
 
     private void der3() {
         if (!Opciones.cliente || Opciones.offline) {
-            mediaplayers.der3();
+                mediaplayers.der3();
 
-        } else
-        if(Opciones.modo_thread)
-            clienteUDP.enviar(packet_der1op);
 
-        //new Client(packet_der3).start();
-           // synchronized(clienteUDP){
-                //clienteUDP.notifyAll();
-            /*synchronized(clienteUDP){
-                try{
-                    System.out.println("Waiting for b to complete...");
-                    clienteUDP.wait();
-                }catch(InterruptedException e){
-                    e.printStackTrace();
-                }
-
-                clienteUDP.enviar(packet_der1op);
+        } else {
+            if (Opciones.modo_tcp)
+                clienteTCP.enviar("9");
+            else
+            {
+                if (Opciones.modo_thread)
+                    clienteUDP.enviar(packet_der3);
+                else
+                    cl_der3.enviar();
             }
-
-          //  }
-        }*/
-
-        else
-            cl_der3.enviar();
+        }
 
 
     }
@@ -414,17 +447,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mediaplayers.izq3();
 
         } else
-        if(Opciones.modo_thread)
-            new Client(packet_izq3).start();
-        else
-            cl_izq3.enviar();
+        {
+            if (Opciones.modo_tcp)
+                clienteTCP.enviar("0");
+            else
+            {
+                if (Opciones.modo_thread)
+                    //asi se hacia antes: new Client(packet_izq3).start();
+                    clienteUDP.enviar(packet_izq3);
+                else
+                    cl_izq3.enviar();
+            }
+        }
 
 
     }
 
 
     private void start() {
-        if(!started) {
+        if (!started) {
             mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             haveSensor = sensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
 
@@ -439,8 +480,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
 
-
-
     }
 
     private void stop() {
@@ -448,9 +487,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.unregisterListener(sensorEventListener);
         sensorManager.unregisterListener(this, mAccelerometer);
 
-        if(haveGravity)
+        if (haveGravity)
             sensorManager.unregisterListener(this, mGravity);
-
 
 
         started = false;
@@ -471,16 +509,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 clienteUDP.interrupt();
             }
         }
+        if (clienteTCP != null) {
+            if (!clienteTCP.isInterrupted()) {
+                clienteTCP.interrupt();
+            }
+        }
+        if (serverTcp != null) {
+            if (!serverTcp.isInterrupted()) {
+                serverTcp.interrupt();
+            }
+        }
 
     }
 
     @Override
     protected void onResume() {
+
         Opciones.no_gravity = Preferencias.read(Preferencias.NO_GRAVITY, Opciones.no_gravity);//read string in shared preference.
 
         start();
         Opciones.no_vibracion = Preferencias.read(Preferencias.NO_VIBRACION, Opciones.no_vibracion);//read string in shared preference.
-
 
 
         Opciones.cliente = Preferencias.read(Preferencias.CLIENTE, Opciones.cliente);//read string in shared preference.
@@ -488,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Opciones.puerto = Preferencias.read(Preferencias.PUERTO, Opciones.puerto);//read string in shared preference.
         Opciones.ipServidor = Preferencias.read(Preferencias.IP_SERVIDOR, Opciones.ipServidor);//read string in shared preference.
         int check = Preferencias.read(Preferencias.MODO, R.id.mano_der);
-        if(check!=R.id.mano_der && check !=R.id.mano_izq && check !=R.id.pie_der && check !=R.id.pie_izq) {
+        if (check != R.id.mano_der && check != R.id.mano_izq && check != R.id.pie_der && check != R.id.pie_izq) {
             check = R.id.mano_der;
             Preferencias.write(Preferencias.MODO, check);//save string in shared preference.
 
@@ -510,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         seekBarB.setProgress(sensibilidadB - min_value);
 
-        int sensibilidad_priv_c= Preferencias.read(Preferencias.SENSIBILIDADC, sensibilidadC);
+        int sensibilidad_priv_c = Preferencias.read(Preferencias.SENSIBILIDADC, sensibilidadC);
         sensibilidadC = sensibilidad_priv_c;
         txt_progresoC.setText(getString(R.string.titulo_sensibilidad, getString(R.string.derecha), sensibilidad_priv_c));
 
@@ -518,28 +566,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //calculaNumeros();
 
-
         try {
             if (!Opciones.cliente && !Opciones.offline) {
-
-                    chatserver = new Server(Opciones.puerto);
+                if (!Opciones.modo_tcp) {
+                    chatserver = new ServerUdp(Opciones.puerto);
                     chatserver.start();
+                }
+                if (Opciones.modo_tcp) {
+
+                    serverTcp = new ServerTcp(Opciones.puerto);
+                    serverTcp.start();
+                }
+
 
             }
-            if (Opciones.cliente && !Opciones.offline) {
+            if (Opciones.cliente && !Opciones.offline && !Opciones.modo_tcp) {
 
-                clienteUDP = new Client2();
+                clienteUDP = new ClientThread();
                 clienteUDP.start();
 
             }
+            if (Opciones.cliente && !Opciones.offline && Opciones.modo_tcp ) {
+                clienteTCP = new ClientTcp(Opciones.ipServidor, Opciones.puerto);
+                clienteTCP.start();
+
+            }
+
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        String log=(haveGravity?getString(R.string.usando_gravedad):getString(R.string.no_usando_gravedad));
 
-        if(!Opciones.offline && Opciones.cliente)
-            log=log+" "+getString(R.string.aviso_cliente);
+        }
+        String log = (haveGravity ? getString(R.string.usando_gravedad) : getString(R.string.no_usando_gravedad));
+
+        if (!Opciones.offline && Opciones.cliente)
+            log = log + " " + getString(R.string.aviso_cliente);
         txt_mAzimuth.setText(log);
 
 
@@ -645,25 +706,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 packet_der3 = new DatagramPacket("9".getBytes(), "9".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
                 packet_izq3 = new DatagramPacket("0".getBytes(), "0".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
 
-                cl_der1cl=new com.fkoteam.anairdrum.udp.Client(packet_der1cl);
-                cl_der1op=new com.fkoteam.anairdrum.udp.Client(packet_der1op);
-                cl_der2=new com.fkoteam.anairdrum.udp.Client(packet_der2);
-                cl_izq1=new com.fkoteam.anairdrum.udp.Client(packet_izq1);
-                cl_izq2=new com.fkoteam.anairdrum.udp.Client(packet_izq2);
-                cl_pie_der=new com.fkoteam.anairdrum.udp.Client(packet_pie_der);
-                cl_pie_izq_pulsado=new com.fkoteam.anairdrum.udp.Client(packet_pie_izq_pulsado);
-                cl_pie_izq_no_pulsado=new com.fkoteam.anairdrum.udp.Client(packet_pie_izq_no_pulsado);
-                cl_der3=new com.fkoteam.anairdrum.udp.Client(packet_der3);
-                cl_izq3=new com.fkoteam.anairdrum.udp.Client(packet_izq3);
-
-
-
-
-
-
-
-
-
+                cl_der1cl = new ClientAsync(packet_der1cl);
+                cl_der1op = new ClientAsync(packet_der1op);
+                cl_der2 = new ClientAsync(packet_der2);
+                cl_izq1 = new ClientAsync(packet_izq1);
+                cl_izq2 = new ClientAsync(packet_izq2);
+                cl_pie_der = new ClientAsync(packet_pie_der);
+                cl_pie_izq_pulsado = new ClientAsync(packet_pie_izq_pulsado);
+                cl_pie_izq_no_pulsado = new ClientAsync(packet_pie_izq_no_pulsado);
+                cl_der3 = new ClientAsync(packet_der3);
+                cl_izq3 = new ClientAsync(packet_izq3);
 
 
             } catch (UnknownHostException e) {
@@ -675,74 +727,65 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-        {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             float x = event.values[0];
             float z = event.values[2];
 
 
-                if (z < -20 - sensibilidadA && !sonandoA && !sonandoB && !sonandoC && (!arriba || !haveGravity)) {
+            if (z < -20 - sensibilidadA && !sonandoA && !sonandoB && !sonandoC && (!arriba || !haveGravity)) {
 
-                    sonandoA = true;
-                    if (izq == 1)
-                        der1();
-                    else
-                        izq1();
+                sonandoA = true;
+                if (izq == 1)
+                    der1();
+                else
+                    izq1();
 
-                    if(!Opciones.no_vibracion)
-                        v.vibrate(50);
+                if (!Opciones.no_vibracion)
+                    v.vibrate(50);
 
-                }
-
-
-
-                if (x > 20 + sensibilidadB && !sonandoA && !sonandoB && !sonandoC) {
-                    sonandoB = true;
-                    if (izq == 1)
-                        der3();
-                    else
-                        izq3();
-
-                    if(!Opciones.no_vibracion)
-                        v.vibrate(50);
-                }
-                if (z > 20 + sensibilidadC && !sonandoA && !sonandoB && !sonandoC && (arriba || !haveGravity)) {
-
-                    sonandoC = true;
-                    if (izq == 1)
-                        der2();
-                    else
-                        izq2();
-
-                    if(!Opciones.no_vibracion)
-                        v.vibrate(50);
-
-                }
-
-                if (sonandoA && z > 0)
-                    sonandoA = false;
-                if (sonandoB && x < 0)
-                    sonandoB = false;
-                if (sonandoC && z < 0)
-                    sonandoC = false;
+            }
 
 
-        }
-        else if (event.sensor.getType() == Sensor.TYPE_GRAVITY)
-        {
-            if( event.values[2]>0)arriba=true; else arriba=false;
+            if (x > 20 + sensibilidadB && !sonandoA && !sonandoB && !sonandoC) {
+                sonandoB = true;
+                if (izq == 1)
+                    der3();
+                else
+                    izq3();
+
+                if (!Opciones.no_vibracion)
+                    v.vibrate(50);
+            }
+            if (z > 20 + sensibilidadC && !sonandoA && !sonandoB && !sonandoC && (arriba || !haveGravity)) {
+
+                sonandoC = true;
+                if (izq == 1)
+                    der2();
+                else
+                    izq2();
+
+                if (!Opciones.no_vibracion)
+                    v.vibrate(50);
+
+            }
+
+            if (sonandoA && z > 0)
+                sonandoA = false;
+            if (sonandoB && x < 0)
+                sonandoB = false;
+            if (sonandoC && z < 0)
+                sonandoC = false;
+
+
+        } else if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
+            if (event.values[2] > 0) arriba = true;
+            else arriba = false;
 
 
         }
-
-
-
 
 
     }
-
-
-
 
 
 }

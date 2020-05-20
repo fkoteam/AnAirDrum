@@ -27,10 +27,12 @@ public class Opciones extends AppCompatActivity {
     public static boolean no_gravity = false;
     public static boolean no_vibracion = false;
     public static boolean modo_thread = false;
+    public static boolean modo_tcp = false;
+
 
 
     RadioGroup radioGroupOffline, radioGroupCliente;
-    CheckBox check_no_gravity,check_no_vibracion,check_modo_thread;
+    CheckBox check_no_gravity,check_no_vibracion,check_modo_thread,check_modo_tcp;
     public static int puerto = 7001;
     public static String ipServidor = "192.168.1.1";
 
@@ -46,6 +48,8 @@ public class Opciones extends AppCompatActivity {
         check_no_gravity = findViewById(R.id.checkBoxGravity);
         check_no_vibracion=findViewById(R.id.checkBoxVibracion);
         check_modo_thread=findViewById(R.id.checkModoThread);
+        check_modo_tcp=findViewById(R.id.checkModoTcp);
+
 
 
 
@@ -128,6 +132,8 @@ public class Opciones extends AppCompatActivity {
         no_gravity=check_no_gravity.isChecked();
         no_vibracion=check_no_vibracion.isChecked();
         modo_thread=check_modo_thread.isChecked();
+        modo_tcp=check_modo_tcp.isChecked();
+
 
 
         Preferencias.write(Preferencias.OFFLINE, offline);//save string in shared preference.
@@ -155,6 +161,8 @@ public class Opciones extends AppCompatActivity {
             check_no_vibracion.setChecked(true);
         if(modo_thread)
             check_modo_thread.setChecked(true);
+        if(modo_tcp)
+            check_modo_tcp.setChecked(true);
     }
 
     private void visibilidad()

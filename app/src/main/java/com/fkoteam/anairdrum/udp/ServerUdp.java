@@ -1,19 +1,17 @@
-package com.fkoteam.anairdrum.udp2;
+package com.fkoteam.anairdrum.udp;
+
+import com.fkoteam.anairdrum.MainActivity;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
-import android.content.Context;
-import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
-
-import com.fkoteam.anairdrum.MainActivity;
-import com.fkoteam.anairdrum.MediaPlayers;
-
-public class Server extends Thread {
+public class ServerUdp extends Thread {
 
     private DatagramSocket server;
     /*private  MediaPlayers mediaPlayers;
@@ -29,7 +27,7 @@ public void setMediaPlayer(MediaPlayers mp)
 
 
     }
-    public Server(int puerto/*,MediaPlayers mp*/) throws IOException {
+    public ServerUdp(int puerto/*,MediaPlayers mp*/) throws IOException {
        // mediaPlayers=mp;
 
         server = new DatagramSocket(puerto);
@@ -44,14 +42,22 @@ public void setMediaPlayer(MediaPlayers mp)
         DatagramPacket dPacket = new DatagramPacket(byte1024, byte1024.length);
         String recibido;
         try {
+            DatagramPacket sendPacket = new DatagramPacket("99".getBytes(),("99").length(), InetAddress.getByName("192.168.1.1"), 7001);
+
             //Log.d("User","runing run()");
             while (true) {
                 server.receive(dPacket);
                 while (true) {
                     recibido = new String(byte1024, 0, dPacket.getLength());
-                    // System.out.println("recibidooo:"+recibido);
 
-
+/*if(!"99".equals(recibido) && !"192.168.1.1".equals(getLocalIpAddress()))
+{
+    server.send(sendPacket);
+}
+else
+{
+    System.out.println("recibidoooo99 "+System.currentTimeMillis());
+}*/
                     if ("6".equals(recibido)) {
 MainActivity.mediaplayers.pie_der();
                       //  mediaPlayers.pie_der();
@@ -115,4 +121,19 @@ MainActivity.mediaplayers.pie_der();
     }
 
 
+    private String getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+        }
+        return null;
+    }
 }

@@ -1,30 +1,20 @@
-package com.fkoteam.anairdrum.udp2;
+package com.fkoteam.anairdrum.udp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import android.util.Log;
 
-public class Client2 extends Thread{
+public class ClientThread extends Thread{
 
     private DatagramPacket packet;
-    private boolean enviar=false;
     private DatagramSocket socket;
 
     public synchronized void enviar(DatagramPacket packet)
     {
-        enviar=true;
         this.packet=packet;
-        System.out.println("actualizado");
         notify();
-        System.out.println("activado");
 
-       /* synchronized(this){
-            this.notify();
-        }*/
 
     }
     public void run(){
@@ -35,13 +25,25 @@ public class Client2 extends Thread{
         }
         try {
                 while (true) {
-                    putMessage();
-                    //sleep(5000);
+                    //putMessage();
+                    synchronized (this)
+                    {
+                        while (packet == null || socket==null) {
+                            wait();
+                        }
+
+                        try {
+                            socket.send(packet);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        packet=null;
+                    }
                 }
             } catch (InterruptedException e) {
             }
         }
-
+/*
         private synchronized void putMessage() throws InterruptedException {
             while (packet == null || socket==null) {
                 System.out.println("antes packet null");
@@ -61,7 +63,7 @@ public class Client2 extends Thread{
             packet=null;
             //Later, when the necessary event happens, the thread that is running it calls notify() from a block synchronized on the same object.
         }
-
+*/
         // Called by Consumer
 
 /*

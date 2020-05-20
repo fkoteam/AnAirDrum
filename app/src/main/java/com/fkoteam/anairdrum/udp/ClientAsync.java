@@ -12,13 +12,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
-public class Client extends Thread{
+public class ClientAsync extends Thread{
 
     private final DatagramPacket packet;
 
     private AsyncTask<Void, Void, Void> async_cient;
 
-    public Client(DatagramPacket newPacket){
+    public ClientAsync(DatagramPacket newPacket){
         this.packet = newPacket;
     }
 

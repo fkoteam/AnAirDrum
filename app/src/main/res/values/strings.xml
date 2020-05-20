@@ -28,6 +28,7 @@
     <string name="si">SÍ</string>
     <string name="no">NO</string>
     <string name="modo_thread">Usar threads (desarrollo)</string>
+    <string name="modo_tcp">Modo TCP (solo desarrollo)</string>
 
 
 </resources>
