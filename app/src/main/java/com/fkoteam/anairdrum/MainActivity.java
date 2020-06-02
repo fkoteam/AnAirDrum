@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,38 +31,40 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fkoteam.anairdrum.tcp.ClientTcp;
-import com.fkoteam.anairdrum.tcp.ServerTcp;
-import com.fkoteam.anairdrum.udp.ClientAsync;
-import com.fkoteam.anairdrum.udp.ClientThread;
-import com.fkoteam.anairdrum.udp.ServerUdp;
+import com.esotericsoftware.kryo.Kryo;
+import com.fkoteam.anairdrum.objects.UpdateObject;
+
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+import ru.maklas.mnet2.Connection;
+import ru.maklas.mnet2.ServerAuthenticator;
+import ru.maklas.mnet2.ServerResponse;
+import ru.maklas.mnet2.ServerSocket;
+import ru.maklas.mnet2.Socket;
+import ru.maklas.mnet2.SocketImpl;
+import ru.maklas.mnet2.SocketProcessor;
+import ru.maklas.mnet2.serialization.KryoSerializer;
+import ru.maklas.mnet2.serialization.Serializer;
+
+public class MainActivity extends AppCompatActivity implements SensorEventListener , ServerAuthenticator {
     float[] rMat = new float[9];
 
+    ServerSocket serverSocket;
 
     SensorManager sensorManager;
     private Sensor mAccelerometer;
     TextView txt_mAzimuth;
     RadioGroup radioGroup;
     DatagramPacket packet_izq1, packet_izq2, packet_izq3, packet_der1cl, packet_der1op, packet_der2, packet_der3, packet_pie_der, packet_pie_izq_pulsado, packet_pie_izq_no_pulsado;
-    ClientAsync cl_izq1, cl_izq2, cl_izq3, cl_der1cl, cl_der1op, cl_der2, cl_der3, cl_pie_der, cl_pie_izq_pulsado, cl_pie_izq_no_pulsado;
-    ClientThread clienteUDP;
-    ClientTcp clienteTCP;
-
 
     public static MediaPlayers mediaplayers;
+    ru.maklas.mnet2.Socket client;
 
-
-    ServerUdp chatserver;
-    ServerTcp serverTcp;
 
 
     Vibrator v;
@@ -120,7 +123,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (mediaplayers == null)
             mediaplayers = new MediaPlayers(getApplicationContext());
 
-        
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
           /*  solo para log de la respuesta
           BufferedReader in =
                     new BufferedReader( new InputStreamReader( socket.getInputStream() ) );*/
@@ -139,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     mediaplayers.pie_der();
                 else
                 {
-                    if (Opciones.modo_tcp) {
+                    /*if (Opciones.modo_tcp) {
                             clienteTCP.enviar("6");
                     }
                     else
@@ -149,7 +154,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             clienteUDP.enviar(packet_pie_der);
                         else
                             cl_pie_der.enviar();
-                    }
+                    }*/
+                    client.sendUnreliable(new EntityUpdate(6)) ;// sends data unreliably and unordered.
+
                 }
 
 
@@ -171,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                         if (Opciones.cliente)
                         {
-                            if (Opciones.modo_tcp)
+                           /* if (Opciones.modo_tcp)
                                 clienteTCP.enviar("7");
                             else {
                                 if (Opciones.modo_thread)
@@ -179,7 +186,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     clienteUDP.enviar(packet_pie_izq_pulsado);
                                 else
                                     cl_pie_izq_pulsado.enviar();
-                            }
+                            }*/
+                            client.sendUnreliable(new EntityUpdate(7)) ;// sends data unreliably and unordered.
+
                         }
 
 
@@ -190,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             mediaplayers.pie_izq();
                         } else
                         {
-                            if (Opciones.modo_tcp)
+                            /*if (Opciones.modo_tcp)
                                 clienteTCP.enviar("8");
                             else {
                                 if (Opciones.modo_thread)
@@ -198,7 +207,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                     clienteUDP.enviar(packet_pie_izq_no_pulsado);
                                 else
                                     cl_pie_izq_no_pulsado.enviar();
-                            }
+                            }*/
+                            client.sendUnreliable(new EntityUpdate(8)) ;// sends data unreliably and unordered.
+
 
                         }
                     }
@@ -341,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mediaplayers.izq1();
         } else
         {
-            if (Opciones.modo_tcp)
+            /*if (Opciones.modo_tcp)
                 clienteTCP.enviar("4");
             else
             {
@@ -351,7 +362,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     clienteUDP.enviar(packet_izq1);
                 else
                     cl_izq1.enviar();
-            }
+            }*/
+            client.sendUnreliable(new EntityUpdate(4)) ;// sends data unreliably and unordered.
+
         }
 
 
@@ -362,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mediaplayers.izq2();
         } else
         {
-            if (Opciones.modo_tcp)
+            /*if (Opciones.modo_tcp)
                 clienteTCP.enviar("5");
             else
             {
@@ -371,7 +384,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     clienteUDP.enviar(packet_izq2);
                 else
                     cl_izq2.enviar();
-            }
+            }*/
+            client.sendUnreliable(new EntityUpdate(5)) ;// sends data unreliably and unordered.
+
         }
 
     }
@@ -385,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mediaplayers.der1_cl();
 
         } else {
-            if (Opciones.modo_tcp)
+            /*if (Opciones.modo_tcp)
                 clienteTCP.enviar("2");
             else
             {
@@ -393,7 +408,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     clienteUDP.enviar(packet_der1op);
                 else
                     cl_der1op.enviar();
-            }
+            }*/
+            client.sendUnreliable(new EntityUpdate(2)) ;// sends data unreliably and unordered.
+
         }
 
 
@@ -405,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         } else
         {
-            if (Opciones.modo_tcp)
+            /*if (Opciones.modo_tcp)
                 clienteTCP.enviar("3");
             else
             {
@@ -415,7 +432,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 else
                     cl_der2.enviar();
-            }
+            }*/
+            client.sendUnreliable(new EntityUpdate(3)) ;// sends data unreliably and unordered.
+
         }
 
 
@@ -427,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
         } else {
-            if (Opciones.modo_tcp)
+            /*if (Opciones.modo_tcp)
                 clienteTCP.enviar("9");
             else
             {
@@ -435,7 +454,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     clienteUDP.enviar(packet_der3);
                 else
                     cl_der3.enviar();
-            }
+            }*/
+            client.sendUnreliable(new EntityUpdate(9)) ;// sends data unreliably and unordered.
+
         }
 
 
@@ -447,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         } else
         {
-            if (Opciones.modo_tcp)
+            /*if (Opciones.modo_tcp)
                 clienteTCP.enviar("0");
             else
             {
@@ -456,7 +477,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     clienteUDP.enviar(packet_izq3);
                 else
                     cl_izq3.enviar();
-            }
+            }*/
+            client.sendUnreliable(new EntityUpdate(0)) ;// sends data unreliably and unordered.
+
         }
 
 
@@ -498,26 +521,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         stop();
         super.onPause();
-        if (chatserver != null) {
-            if (!chatserver.isInterrupted()) {
-                chatserver.interrupt();
-            }
-        }
-        if (clienteUDP != null) {
-            if (!clienteUDP.isInterrupted()) {
-                clienteUDP.interrupt();
-            }
-        }
-        if (clienteTCP != null) {
-            if (!clienteTCP.isInterrupted()) {
-                clienteTCP.interrupt();
-            }
-        }
-        if (serverTcp != null) {
-            if (!serverTcp.isInterrupted()) {
-                serverTcp.interrupt();
-            }
-        }
+
+if(serverSocket!=null)
+    serverSocket.close();
+if(client!=null)
+    client.close();
 
     }
 
@@ -566,7 +574,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //calculaNumeros();
 
         try {
-            if (!Opciones.cliente && !Opciones.offline) {
+            if(!Opciones.cliente && !Opciones.offline)
+            {
+                ServerSocket serverSocket = TestUtils.newServerSocket(TestUtils.udp(Opciones.puerto, 0, 0), this);
+                TestUtils.startUpdating(serverSocket, 16);
+
+            }
+            if(Opciones.cliente && !Opciones.offline)
+            {
+                client = new SocketImpl(InetAddress.getByName(Opciones.ipServidor), Opciones.puerto, TestUtils.serializerSupplier.get());
+
+
+                ServerResponse response = client.connect(new ConnectionRequest("maklas"), 5_000);
+
+                //Here is our response object that Server replied with. Check it for being NULL just in case.
+                ConnectionResponse connResp = (ConnectionResponse) response.getResponse();
+
+//There is 4 types of possible outcomes during connection.
+//The only time we can be sure to be connected is when ResponseType == ACCEPTED.
+//In any other case, socket is not connected.
+                switch (response.getType()){
+                    case ACCEPTED:
+                        System.out.println("Successfully connected with message " + connResp.getMessage());
+                        break;
+                    case REJECTED:
+                        System.out.println("Server rejected our request with message " + connResp.getMessage());
+                        break;
+                    case NO_RESPONSE:
+                        System.out.println("Server doesn't respond");
+                        break;
+                    case WRONG_STATE:
+                        System.out.println("Socket was closed or was already connected");
+                        break;
+                }
+            }
+            /*if (!Opciones.cliente && !Opciones.offline) {
                 if (!Opciones.modo_tcp) {
                     chatserver = new ServerUdp(Opciones.puerto);
                     chatserver.start();
@@ -589,7 +631,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 clienteTCP = new ClientTcp(Opciones.ipServidor, Opciones.puerto);
                 clienteTCP.start();
 
-            }
+            }*/
 
 
         } catch (IOException e) {
@@ -705,16 +747,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 packet_der3 = new DatagramPacket("9".getBytes(), "9".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
                 packet_izq3 = new DatagramPacket("0".getBytes(), "0".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
 
-                cl_der1cl = new ClientAsync(packet_der1cl);
-                cl_der1op = new ClientAsync(packet_der1op);
-                cl_der2 = new ClientAsync(packet_der2);
-                cl_izq1 = new ClientAsync(packet_izq1);
-                cl_izq2 = new ClientAsync(packet_izq2);
-                cl_pie_der = new ClientAsync(packet_pie_der);
-                cl_pie_izq_pulsado = new ClientAsync(packet_pie_izq_pulsado);
-                cl_pie_izq_no_pulsado = new ClientAsync(packet_pie_izq_no_pulsado);
-                cl_der3 = new ClientAsync(packet_der3);
-                cl_izq3 = new ClientAsync(packet_izq3);
 
 
             } catch (UnknownHostException e) {
@@ -787,4 +819,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
+
+
+    @Override
+    public void acceptConnection(Connection conn) {
+        System.out.println("Received connection request: " + conn);
+
+        if (conn.getRequest() instanceof ConnectionRequest){
+            ConnectionResponse response = new ConnectionResponse("Welcome, " + ((ConnectionRequest) conn.getRequest()).getName() + "!");
+            System.out.println("Responding with " + response);
+            Socket socket = conn.accept(response);
+
+
+        }
+    }
 }

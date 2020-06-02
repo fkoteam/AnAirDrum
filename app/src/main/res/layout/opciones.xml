@@ -141,27 +141,15 @@
         android:text="@string/no_vibra"
         android:layout_below="@id/checkBoxGravity"
         android:onClick="checkButton"/>
-    <CheckBox
-        android:id="@+id/checkModoThread"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/modo_thread"
-        android:layout_below="@id/checkBoxVibracion"
-        android:onClick="checkButton"/>
-    <CheckBox
-        android:id="@+id/checkModoTcp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/modo_tcp"
-        android:layout_below="@id/checkModoThread"
-        android:onClick="checkButton"/>
+
+
 
     <TextView
         android:id="@+id/txt_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/version"
-        android:layout_below="@+id/checkModoTcp"
+        android:layout_below="@+id/checkBoxVibracion"
         android:layout_marginTop="10dp"
         android:paddingRight="30dp"
 

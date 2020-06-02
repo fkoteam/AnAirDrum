@@ -5,6 +5,8 @@
     android:padding="16dp"
     android:keepScreenOn="true">
 
+
+
     <TextView
         android:id="@+id/txt_progresoA"
         android:layout_width="wrap_content"
