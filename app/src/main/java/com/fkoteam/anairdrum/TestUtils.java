@@ -130,6 +130,7 @@ public class TestUtils {
     }
 
     public static UDPSocket udp(int port, int additionalPing, double packetLoss) throws SocketException {
+
         UDPSocket udp = port < 1024 ? new JavaUDPSocket() : new JavaUDPSocket(port);
         if (additionalPing > 0){
             udp = new HighPingUDPSocket(udp, additionalPing);
@@ -138,6 +139,15 @@ public class TestUtils {
             udp = new PacketLossUDPSocket(udp, packetLoss, packetLoss);
         }
         return udp;
+
+       /* UDPSocket udp = port < 1024 ? new JavaUDPSocket() : new JavaUDPSocket(port);
+        if (additionalPing > 0){
+            udp = new HighPingUDPSocket(udp, additionalPing);
+        }
+        if (packetLoss > 0){
+            udp = new PacketLossUDPSocket(udp, packetLoss, packetLoss);
+        }
+        return udp;*/
     }
 /*
     public static void sleep(int millis){

@@ -53,10 +53,10 @@ import ru.maklas.mnet2.SocketProcessor;
 import ru.maklas.mnet2.serialization.KryoSerializer;
 import ru.maklas.mnet2.serialization.Serializer;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener , ServerAuthenticator {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
     float[] rMat = new float[9];
 
-    ServerSocket serverSocket;
+
 
     SensorManager sensorManager;
     private Sensor mAccelerometer;
@@ -64,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     RadioGroup radioGroup;
 
     public static MediaPlayers mediaplayers;
-    ru.maklas.mnet2.Socket client;
+    public static GestionarConexiones gestionarConexiones;
+
 
 
 
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Preferencias.init(getApplicationContext());
         if (mediaplayers == null)
             mediaplayers = new MediaPlayers(getApplicationContext());
+        if (gestionarConexiones == null)
+            gestionarConexiones = GestionarConexiones.getSingletonInstance();
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
@@ -155,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         else
                             cl_pie_der.enviar();
                     }*/
-                    client.sendUnreliable(new EntityUpdate(6)); ;// sends data unreliably and unordered.
+                    gestionarConexiones.sendUnreliable(new EntityUpdate(6));
 
                 }
 
@@ -187,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 else
                                     cl_pie_izq_pulsado.enviar();
                             }*/
-                            client.sendUnreliable(new EntityUpdate(7)) ;// sends data unreliably and unordered.
+                            gestionarConexiones.sendUnreliable(new EntityUpdate(7)) ;// sends data unreliably and unordered.
 
                         }
 
@@ -208,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 else
                                     cl_pie_izq_no_pulsado.enviar();
                             }*/
-                            client.sendUnreliable(new EntityUpdate(8)) ;// sends data unreliably and unordered.
+                            gestionarConexiones.sendUnreliable(new EntityUpdate(8)) ;// sends data unreliably and unordered.
 
 
                         }
@@ -363,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 else
                     cl_izq1.enviar();
             }*/
-            client.sendUnreliable(new EntityUpdate(4)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(4)) ;// sends data unreliably and unordered.
 
         }
 
@@ -385,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 else
                     cl_izq2.enviar();
             }*/
-            client.sendUnreliable(new EntityUpdate(5)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(5)) ;// sends data unreliably and unordered.
 
         }
 
@@ -409,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 else
                     cl_der1op.enviar();
             }*/
-            client.sendUnreliable(new EntityUpdate(2)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(2)) ;// sends data unreliably and unordered.
 
         }
 
@@ -433,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 else
                     cl_der2.enviar();
             }*/
-            client.sendUnreliable(new EntityUpdate(3)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(3)) ;// sends data unreliably and unordered.
 
         }
 
@@ -455,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 else
                     cl_der3.enviar();
             }*/
-            client.sendUnreliable(new EntityUpdate(9)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(9)) ;// sends data unreliably and unordered.
 
         }
 
@@ -478,7 +481,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 else
                     cl_izq3.enviar();
             }*/
-            client.sendUnreliable(new EntityUpdate(0)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(0)) ;// sends data unreliably and unordered.
 
         }
 
@@ -522,10 +525,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         stop();
         super.onPause();
 
-if(serverSocket!=null)
-    serverSocket.close();
-if(client!=null)
-    client.close();
+gestionarConexiones.stop();
 
     }
 
@@ -572,68 +572,16 @@ if(client!=null)
         seekBarC.setProgress(sensibilidadC - min_value);
 
         //calculaNumeros();
-
         try {
             if(!Opciones.cliente && !Opciones.offline)
             {
-                ServerSocket serverSocket = TestUtils.newServerSocket(TestUtils.udp(Opciones.puerto, 0, 0), this);
-                TestUtils.startUpdating(serverSocket, 1); //TODO probar diferentes valores. por defecto, 16
-               // BroadcastServlet servlet = new BroadcastServlet(7368, 512, "uuid", TestUtils.serializerSupplier.get(), this);
-
-
+                gestionarConexiones.inicializaServidor();
             }
             if(Opciones.cliente && !Opciones.offline)
             {
-                client = new SocketImpl(InetAddress.getByName(Opciones.ipServidor), Opciones.puerto, TestUtils.serializerSupplier.get());
-
-
-                ServerResponse response = client.connect(new ConnectionRequest("maklas"), 5_000);
-
-                //Here is our response object that Server replied with. Check it for being NULL just in case.
-                ConnectionResponse connResp = (ConnectionResponse) response.getResponse();
-
-//There is 4 types of possible outcomes during connection.
-//The only time we can be sure to be connected is when ResponseType == ACCEPTED.
-//In any other case, socket is not connected.
-                switch (response.getType()){
-                    case ACCEPTED:
-                        System.out.println("Successfully connected with message " + connResp.getMessage());
-                        break;
-                    case REJECTED:
-                        System.out.println("Server rejected our request with message " + connResp.getMessage());
-                        break;
-                    case NO_RESPONSE:
-                        System.out.println("Server doesn't respond");
-                        break;
-                    case WRONG_STATE:
-                        System.out.println("Socket was closed or was already connected");
-                        break;
-                }
+                gestionarConexiones.inicializaCliente();
             }
-            /*if (!Opciones.cliente && !Opciones.offline) {
-                if (!Opciones.modo_tcp) {
-                    chatserver = new ServerUdp(Opciones.puerto);
-                    chatserver.start();
-                }
-                if (Opciones.modo_tcp) {
 
-                    serverTcp = new ServerTcp(Opciones.puerto);
-                    serverTcp.start();
-                }
-
-
-            }
-            if (Opciones.cliente && !Opciones.offline && !Opciones.modo_tcp) {
-
-                clienteUDP = new ClientThread();
-                clienteUDP.start();
-
-            }
-            if (Opciones.cliente && !Opciones.offline && Opciones.modo_tcp ) {
-                clienteTCP = new ClientTcp(Opciones.ipServidor, Opciones.puerto);
-                clienteTCP.start();
-
-            }*/
 
 
         } catch (IOException e) {
@@ -799,18 +747,7 @@ if(client!=null)
 
 
 
-    @Override
-    public void acceptConnection(Connection conn) {
-        System.out.println("Received connection request: " + conn);
 
-        if (conn.getRequest() instanceof ConnectionRequest){
-            ConnectionResponse response = new ConnectionResponse("Welcome, " + ((ConnectionRequest) conn.getRequest()).getName() + "!");
-            System.out.println("Responding with " + response);
-            Socket socket = conn.accept(response);
-
-
-        }
-    }
 
 
 

@@ -41,6 +41,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     implementation 'com.koushikdutta.async:androidasync:2.+'
-    implementation "com.github.maklas:MNet-2:0.4"
+    implementation 'com.badlogicgames.gdx:gdx-tools:1.9.10'
+    implementation group: 'com.esotericsoftware.kryo', name: 'kryo', version: '2.24.0'
+
 
 }

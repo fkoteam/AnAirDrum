@@ -31,13 +31,12 @@ import ru.maklas.mnet2.BroadcastResponse;
 import ru.maklas.mnet2.BroadcastServlet;
 import ru.maklas.mnet2.BroadcastSocket;
 
-public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
+public class Opciones extends AppCompatActivity {
     public static boolean offline = true;
     public static boolean cliente = true;
     public static boolean no_gravity = false;
     public static boolean no_vibracion = false;
-    BroadcastSocket socket=null;
-    int num_clientes=0;
+    public static int num_clientes=0;
 
 
     public static AtomicBoolean receivedResponse = new AtomicBoolean();
@@ -47,13 +46,13 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
     CheckBox check_no_gravity,check_no_vibracion,check_modo_thread,check_modo_tcp;
     public static int puerto = 7001;
     public static String ipServidor = "192.168.1.1";
-    String ip;
+    public static String ip;
 
     private EditText puertoEdit, ipServidorEdit;
-    private boolean pararServidorBroadcast=false;
-    private BroadcastServlet servlet=null;
     private int mInterval = 2000; // 5 seconds by default, can be changed later
     private Handler mHandler;
+    public static GestionarConexiones gestionarConexiones;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +64,8 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
         check_no_gravity = findViewById(R.id.checkBoxGravity);
         check_no_vibracion=findViewById(R.id.checkBoxVibracion);
 
+        if (gestionarConexiones == null)
+            gestionarConexiones = GestionarConexiones.getSingletonInstance();
 
 
         ip = getLocalIpAddress();
@@ -158,37 +159,18 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
     {
         if(cliente)
         {
+            num_clientes=0;
             stopRepeatingTask();
-            if(servlet!=null)
-                servlet.close();
-            if(socket!=null)
-                socket.close();
+            gestionarConexiones.stop();
             TextView txt_servidor = findViewById(R.id.servidor);
             txt_servidor.setText(getString(R.string.servidor));
-            socket = new BroadcastSocket(TestUtils.udp(0, 0, 50), "255.255.255.255", 7368, 512, "uuid".getBytes(), TestUtils.serializerSupplier.get());
-
-            ConnectionRequest request = new ConnectionRequest("maklas");
+            gestionarConexiones.creaBroadCastCliente();
             Toast.makeText(getApplicationContext(), "Buscando...", Toast.LENGTH_SHORT).show();
             receivedResponse.set(false);
 
 
-            socket.search(request, 1000, 5, new BroadcastReceiver() {
-                @Override
-                public void receive(BroadcastResponse response) {
-                    receivedResponse.set(true);
-                    ipServidor=response.getAddress().toString();
-                    ipServidor=ipServidor.replaceAll("[^\\d.]", "");
 
 
-
-                }
-
-                @Override
-                public void finished(boolean interrupted) {
-                    System.out.println("Finsihed: " + interrupted);
-
-                }
-            });
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable(){
@@ -219,12 +201,11 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
             }
         else
         {
-            if(servlet!=null)
-                servlet.close();
-            if(socket!=null)
-                socket.close();
-             servlet = new BroadcastServlet(7368, 512, "uuid", TestUtils.serializerSupplier.get(), this);
-            TestUtils.startUpdating(servlet, 16);
+            gestionarConexiones.stop();
+            gestionarConexiones.inicializaServidor();
+            gestionarConexiones.creaBroadCastServidor();
+
+
             Toast.makeText(getApplicationContext(), "Escuchando...", Toast.LENGTH_SHORT).show();
 
             mHandler = new Handler();
@@ -314,31 +295,19 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
     protected void onPause() {
         super.onPause();
         stopRepeatingTask();
-        if(socket!=null)
-            socket.close();
-        if(servlet!=null)
-            servlet.close();
+        gestionarConexiones.stopMenosServidor();
+
 
 
     }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(servlet!=null)
-            servlet.close();
-        if(socket!=null)
-            socket.close();
+        gestionarConexiones.stopMenosServidor();
+
         this.finish();
     }
 
-    @Override
-    public Object process(InetAddress address, int port, Object request) {
-       System.out.println("!!!Server received request: " + request);
-        ConnectionResponse welcome = new ConnectionResponse(ip);
-        System.out.println("Responding with: " + welcome);
-num_clientes++;
-        return welcome;
-    }
 
     Runnable mStatusChecker = new Runnable() {
         @Override
