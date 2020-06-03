@@ -72,7 +72,6 @@ public class MediaPlayers {
         soundpool.play(pie_izq_cer, 1f, 1f, 1, 0, 1f);
         for(Integer i : list_der1op) {
             soundpool.stop(i.intValue());
-            System.out.println("parando"+i.intValue());
 
 
         }
@@ -84,7 +83,6 @@ public class MediaPlayers {
         if(pie_izq_pulsado) {
             Integer i=new Integer(soundpool.play(der1op, 1f, 1f, 1, 0, 1f));
             list_der1op.add(i);
-            System.out.println("arrancando"+i.intValue());
 
         }
         else

@@ -19,7 +19,7 @@ import java.util.Random;
 
 public class TestUtils {
 
-    public static Supplier<Serializer> serializerSupplier = new MySerializer(512);
+    public static Supplier<Serializer> serializerSupplier = new MySerializer(128);
 
 
     public static void startUpdating(ServerSocket serverSocket, int freq){
@@ -100,7 +100,7 @@ public class TestUtils {
 
 
     public static ServerSocket newServerSocket(UDPSocket udp, ServerAuthenticator auth){
-        return new ServerSocket(udp, 512, 15000, 1500, 125, auth, serializerSupplier);
+        return new ServerSocket(udp, 128, 15000, 1500, 125, auth, serializerSupplier);
     }
 
     public static UDPSocket udp(int port, int additionalPing, double packetLoss) throws SocketException {

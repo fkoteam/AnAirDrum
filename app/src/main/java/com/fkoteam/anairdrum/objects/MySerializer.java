@@ -7,7 +7,7 @@ import ru.maklas.mnet2.serialization.KryoSerializerProvider;
 public class MySerializer extends KryoSerializerProvider{
 
     public MySerializer() {
-        this(512);
+        this(128);
     }
     public MySerializer(int bufferSize) {
         super(bufferSize, new Supplier<Kryo>() {

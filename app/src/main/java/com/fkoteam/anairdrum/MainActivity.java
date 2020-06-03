@@ -41,6 +41,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import ru.maklas.mnet2.BroadcastProcessor;
+import ru.maklas.mnet2.BroadcastServlet;
 import ru.maklas.mnet2.Connection;
 import ru.maklas.mnet2.ServerAuthenticator;
 import ru.maklas.mnet2.ServerResponse;
@@ -60,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mAccelerometer;
     TextView txt_mAzimuth;
     RadioGroup radioGroup;
-    DatagramPacket packet_izq1, packet_izq2, packet_izq3, packet_der1cl, packet_der1op, packet_der2, packet_der3, packet_pie_der, packet_pie_izq_pulsado, packet_pie_izq_no_pulsado;
 
     public static MediaPlayers mediaplayers;
     ru.maklas.mnet2.Socket client;
@@ -132,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
 
-        construirDatagram();
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         radioGroup = findViewById(R.id.radioGroup);
 
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         else
                             cl_pie_der.enviar();
                     }*/
-                    client.sendUnreliable(new EntityUpdate(6)) ;// sends data unreliably and unordered.
+                    client.sendUnreliable(new EntityUpdate(6)); ;// sends data unreliably and unordered.
 
                 }
 
@@ -551,7 +551,7 @@ if(client!=null)
 
         radioGroup.check(check);
         gestionaCheck(check);//read string in shared preference);
-        construirDatagram();
+
 
         int sensibilidad_priv_a = Preferencias.read(Preferencias.SENSIBILIDADA, sensibilidadA);
         sensibilidadA = sensibilidad_priv_a;
@@ -577,7 +577,9 @@ if(client!=null)
             if(!Opciones.cliente && !Opciones.offline)
             {
                 ServerSocket serverSocket = TestUtils.newServerSocket(TestUtils.udp(Opciones.puerto, 0, 0), this);
-                TestUtils.startUpdating(serverSocket, 16);
+                TestUtils.startUpdating(serverSocket, 1); //TODO probar diferentes valores. por defecto, 16
+               // BroadcastServlet servlet = new BroadcastServlet(7368, 512, "uuid", TestUtils.serializerSupplier.get(), this);
+
 
             }
             if(Opciones.cliente && !Opciones.offline)
@@ -732,30 +734,6 @@ if(client!=null)
 
     }
 
-    private void construirDatagram() {
-        if (!Opciones.offline && Opciones.cliente) {
-            try {
-                packet_der1cl = new DatagramPacket("1".getBytes(), "1".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_der1op = new DatagramPacket("2".getBytes(), "2".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-
-                packet_der2 = new DatagramPacket("3".getBytes(), "3".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_izq1 = new DatagramPacket("4".getBytes(), "4".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_izq2 = new DatagramPacket("5".getBytes(), "5".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_pie_der = new DatagramPacket("6".getBytes(), "6".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_pie_izq_pulsado = new DatagramPacket("7".getBytes(), "7".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_pie_izq_no_pulsado = new DatagramPacket("8".getBytes(), "8".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_der3 = new DatagramPacket("9".getBytes(), "9".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-                packet_izq3 = new DatagramPacket("0".getBytes(), "0".length(), InetAddress.getByName(Opciones.ipServidor), Opciones.puerto);
-
-
-
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -833,4 +811,7 @@ if(client!=null)
 
         }
     }
+
+
+
 }

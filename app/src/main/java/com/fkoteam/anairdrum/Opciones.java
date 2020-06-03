@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,21 +19,30 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Opciones extends AppCompatActivity {
+import ru.maklas.mnet2.BroadcastProcessor;
+import ru.maklas.mnet2.BroadcastReceiver;
+import ru.maklas.mnet2.BroadcastResponse;
+import ru.maklas.mnet2.BroadcastSocket;
+
+public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
     public static boolean offline = true;
     public static boolean cliente = true;
     public static boolean no_gravity = false;
     public static boolean no_vibracion = false;
 
+    public static AtomicBoolean receivedResponse = new AtomicBoolean();
 
 
     RadioGroup radioGroupOffline, radioGroupCliente;
     CheckBox check_no_gravity,check_no_vibracion,check_modo_thread,check_modo_tcp;
     public static int puerto = 7001;
     public static String ipServidor = "192.168.1.1";
+    String ip;
 
     private EditText puertoEdit, ipServidorEdit;
 
@@ -48,7 +58,7 @@ public class Opciones extends AppCompatActivity {
 
 
 
-        String ip = getLocalIpAddress();
+        ip = getLocalIpAddress();
         visibilidad();
 
         ((TextView) findViewById(R.id.txt_ip)).setText(getString(R.string.ip_de_dispositivo,ip) );
@@ -120,7 +130,7 @@ public class Opciones extends AppCompatActivity {
     }
 
 
-    public void checkButton(View view) {
+    public void checkButton(View view) throws SocketException, UnknownHostException {
 
         offline = radioGroupOffline.getCheckedRadioButtonId() == findViewById(R.id.offline).getId();
         cliente = radioGroupCliente.getCheckedRadioButtonId() == findViewById(R.id.cliente).getId();
@@ -132,6 +142,60 @@ public class Opciones extends AppCompatActivity {
         Preferencias.write(Preferencias.NO_GRAVITY, no_gravity);//save int in shared preference.
         Preferencias.write(Preferencias.NO_VIBRACION, no_vibracion);//save int in shared preference.
 
+    /*if(!offline)
+    {
+        final BroadcastSocket socket;
+
+            socket = new BroadcastSocket(TestUtils.udp(0, 0, 50), "255.255.255.255", 7368, 512, "uuid".getBytes(), TestUtils.serializerSupplier.get());
+
+        ConnectionRequest request = new ConnectionRequest("maklas");
+        Toast.makeText(getApplicationContext(), "Buscando...", Toast.LENGTH_SHORT).show();
+        receivedResponse.set(false);
+
+
+        socket.search(request, 1000, 5, new BroadcastReceiver() {
+            @Override
+            public void receive(BroadcastResponse response) {
+                receivedResponse.set(true);
+ipServidor=response.getAddress().toString();
+
+
+
+
+            }
+
+            @Override
+            public void finished(boolean interrupted) {
+                System.out.println("Finsihed: " + interrupted);
+            }
+        });
+
+        if(receivedResponse.get())
+        {
+            //cliente
+            ipServidorEdit.setText(ipServidor);
+            Preferencias.write(Preferencias.IP_SERVIDOR, ipServidor);//save string in shared preference.
+            cliente=true;
+            Preferencias.write(Preferencias.CLIENTE, cliente);//save int in shared preference.
+            Toast.makeText(getApplicationContext(), "Cliente!...", Toast.LENGTH_SHORT).show();
+
+        }
+        else
+        {
+            //servidor
+            cliente=false;
+            Preferencias.write(Preferencias.CLIENTE, cliente);//save int in shared preference.
+            Toast.makeText(getApplicationContext(), "Servidor!...", Toast.LENGTH_SHORT).show();
+
+        }
+
+
+
+
+
+
+        socket.close();
+    }*/
 
         visibilidad();
     }
@@ -188,5 +252,14 @@ public class Opciones extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         this.finish();
+    }
+
+    @Override
+    public Object process(InetAddress address, int port, Object request) {
+       System.out.println("!!!Server received request: " + request);
+        ConnectionResponse welcome = new ConnectionResponse(ip);
+        System.out.println("Responding with: " + welcome);
+
+        return welcome;
     }
 }
