@@ -3,6 +3,7 @@ package com.fkoteam.anairdrum;
 
 import com.badlogic.gdx.utils.Array;
 
+import ru.maklas.mnet2.BroadcastServlet;
 import ru.maklas.mnet2.HighPingUDPSocket;
 import ru.maklas.mnet2.JavaUDPSocket;
 import ru.maklas.mnet2.PacketLossUDPSocket;
@@ -21,8 +22,15 @@ public class TestUtils {
 
     public static Supplier<Serializer> serializerSupplier = new MySerializer(128);
 
+    public static void startUpdating(BroadcastServlet broadServerSocket, int freq){
+        startUpdating(broadServerSocket, freq, new SocketProcessor() {
+            @Override
+            public void process(Socket s, Object o) {
+            }
+        });
+    }
 
-    public static void startUpdating(ServerSocket serverSocket, int freq){
+                public static void startUpdating(ServerSocket serverSocket, int freq){
         startUpdating(serverSocket, freq, new SocketProcessor() {
             @Override
             public void process(Socket s, Object o) {
@@ -94,6 +102,24 @@ public class TestUtils {
                         e.printStackTrace();
                     }
                 }
+            }
+        }).start();
+    }
+
+    public static void startUpdating(final BroadcastServlet broadServerSocket, final int freq, final SocketProcessor processor){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!broadServerSocket.isClosed()) {
+
+                    broadServerSocket.update();
+                    try {
+                        Thread.sleep(freq);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         }).start();
     }

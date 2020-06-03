@@ -3,6 +3,7 @@ package com.fkoteam.anairdrum;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ru.maklas.mnet2.BroadcastProcessor;
 import ru.maklas.mnet2.BroadcastReceiver;
 import ru.maklas.mnet2.BroadcastResponse;
+import ru.maklas.mnet2.BroadcastServlet;
 import ru.maklas.mnet2.BroadcastSocket;
 
 public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
@@ -34,6 +36,9 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
     public static boolean cliente = true;
     public static boolean no_gravity = false;
     public static boolean no_vibracion = false;
+    BroadcastSocket socket=null;
+    int num_clientes=0;
+
 
     public static AtomicBoolean receivedResponse = new AtomicBoolean();
 
@@ -45,6 +50,10 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
     String ip;
 
     private EditText puertoEdit, ipServidorEdit;
+    private boolean pararServidorBroadcast=false;
+    private BroadcastServlet servlet=null;
+    private int mInterval = 2000; // 5 seconds by default, can be changed later
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +139,10 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
     }
 
 
-    public void checkButton(View view) throws SocketException, UnknownHostException {
+    public void checkButton(View view) throws Exception {
+        String haLlamado = "";
+        if(view.getTag()!=null)
+            haLlamado=view.getTag().toString();
 
         offline = radioGroupOffline.getCheckedRadioButtonId() == findViewById(R.id.offline).getId();
         cliente = radioGroupCliente.getCheckedRadioButtonId() == findViewById(R.id.cliente).getId();
@@ -142,50 +154,87 @@ public class Opciones extends AppCompatActivity  implements BroadcastProcessor {
         Preferencias.write(Preferencias.NO_GRAVITY, no_gravity);//save int in shared preference.
         Preferencias.write(Preferencias.NO_VIBRACION, no_vibracion);//save int in shared preference.
 
-    /*if(!offline)
+    if(!offline && ("cliente".equals(haLlamado) || "servidor".equals(haLlamado)))
     {
-        final BroadcastSocket socket;
-
+        if(cliente)
+        {
+            stopRepeatingTask();
+            if(servlet!=null)
+                servlet.close();
+            if(socket!=null)
+                socket.close();
+            TextView txt_servidor = findViewById(R.id.servidor);
+            txt_servidor.setText(getString(R.string.servidor));
             socket = new BroadcastSocket(TestUtils.udp(0, 0, 50), "255.255.255.255", 7368, 512, "uuid".getBytes(), TestUtils.serializerSupplier.get());
 
-        ConnectionRequest request = new ConnectionRequest("maklas");
-        Toast.makeText(getApplicationContext(), "Buscando...", Toast.LENGTH_SHORT).show();
-        receivedResponse.set(false);
+            ConnectionRequest request = new ConnectionRequest("maklas");
+            Toast.makeText(getApplicationContext(), "Buscando...", Toast.LENGTH_SHORT).show();
+            receivedResponse.set(false);
 
 
-        socket.search(request, 1000, 5, new BroadcastReceiver() {
-            @Override
-            public void receive(BroadcastResponse response) {
-                receivedResponse.set(true);
-ipServidor=response.getAddress().toString();
+            socket.search(request, 1000, 5, new BroadcastReceiver() {
+                @Override
+                public void receive(BroadcastResponse response) {
+                    receivedResponse.set(true);
+                    ipServidor=response.getAddress().toString();
+                    ipServidor=ipServidor.replaceAll("[^\\d.]", "");
 
+
+
+                }
+
+                @Override
+                public void finished(boolean interrupted) {
+                    System.out.println("Finsihed: " + interrupted);
+
+                }
+            });
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable(){
+                @Override
+                public void run(){
+                    // do something
+                    if(receivedResponse.get()) {
+                        Toast.makeText(getApplicationContext(), "Servidor encontrado.", Toast.LENGTH_SHORT).show();
+
+
+                        ipServidorEdit.setText(ipServidor);
+                        Preferencias.write(Preferencias.IP_SERVIDOR, ipServidor);//save string in shared preference.
+                        TextView txt_cliente = findViewById(R.id.cliente);
+                        txt_cliente.setText(getString(R.string.cliente_asociado));
+
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "Servidor no encontrado. Vuelve a intentar o configua manualmente.", Toast.LENGTH_SHORT).show();
+                        TextView txt_cliente = findViewById(R.id.cliente);
+                        txt_cliente.setText(getString(R.string.cliente_no_asociado));
+                    }
+                }
+            }, 2000);
 
 
 
             }
-
-            @Override
-            public void finished(boolean interrupted) {
-                System.out.println("Finsihed: " + interrupted);
-            }
-        });
-
-        if(receivedResponse.get())
-        {
-            //cliente
-            ipServidorEdit.setText(ipServidor);
-            Preferencias.write(Preferencias.IP_SERVIDOR, ipServidor);//save string in shared preference.
-            cliente=true;
-            Preferencias.write(Preferencias.CLIENTE, cliente);//save int in shared preference.
-            Toast.makeText(getApplicationContext(), "Cliente!...", Toast.LENGTH_SHORT).show();
-
-        }
         else
         {
-            //servidor
-            cliente=false;
-            Preferencias.write(Preferencias.CLIENTE, cliente);//save int in shared preference.
-            Toast.makeText(getApplicationContext(), "Servidor!...", Toast.LENGTH_SHORT).show();
+            if(servlet!=null)
+                servlet.close();
+            if(socket!=null)
+                socket.close();
+             servlet = new BroadcastServlet(7368, 512, "uuid", TestUtils.serializerSupplier.get(), this);
+            TestUtils.startUpdating(servlet, 16);
+            Toast.makeText(getApplicationContext(), "Escuchando...", Toast.LENGTH_SHORT).show();
+
+            mHandler = new Handler();
+            startRepeatingTask();
+            TextView txt_cliente = findViewById(R.id.cliente);
+            txt_cliente.setText(getString(R.string.cliente));
+
+
+
+
 
         }
 
@@ -194,8 +243,12 @@ ipServidor=response.getAddress().toString();
 
 
 
-        socket.close();
-    }*/
+
+
+
+
+
+    }
 
         visibilidad();
     }
@@ -219,6 +272,8 @@ ipServidor=response.getAddress().toString();
 
     private void visibilidad()
     {
+        CheckBox opciones_avanzadas=findViewById(R.id.opciones_avanzadas);
+
         if(offline)
         {
             findViewById(R.id.cliente).setVisibility(View.GONE);
@@ -227,30 +282,52 @@ ipServidor=response.getAddress().toString();
             findViewById(R.id.txt_puerto).setVisibility(View.GONE);
             findViewById(R.id.ip_servidor).setVisibility(View.GONE);
             findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
+            findViewById(R.id.opciones_avanzadas).setVisibility(View.GONE);
 
         }
         else
         {
             findViewById(R.id.cliente).setVisibility(View.VISIBLE);
             findViewById(R.id.servidor).setVisibility(View.VISIBLE);
-            findViewById(R.id.puerto).setVisibility(View.VISIBLE);
-            findViewById(R.id.txt_puerto).setVisibility(View.VISIBLE);
-            if(cliente)
-            {
-                findViewById(R.id.ip_servidor).setVisibility(View.VISIBLE);
-                findViewById(R.id.txt_ip_servidor).setVisibility(View.VISIBLE);
+            if(opciones_avanzadas.isChecked()) {
+                findViewById(R.id.puerto).setVisibility(View.VISIBLE);
+                findViewById(R.id.txt_puerto).setVisibility(View.VISIBLE);
+                if (cliente) {
+                    findViewById(R.id.ip_servidor).setVisibility(View.VISIBLE);
+                    findViewById(R.id.txt_ip_servidor).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.ip_servidor).setVisibility(View.GONE);
+                    findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
+                }
             }
             else
             {
                 findViewById(R.id.ip_servidor).setVisibility(View.GONE);
                 findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
+                findViewById(R.id.txt_ip).setVisibility(View.GONE);
+                findViewById(R.id.puerto).setVisibility(View.GONE);
+                findViewById(R.id.txt_puerto).setVisibility(View.GONE);
             }
         }
     }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopRepeatingTask();
+        if(socket!=null)
+            socket.close();
+        if(servlet!=null)
+            servlet.close();
 
+
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        if(servlet!=null)
+            servlet.close();
+        if(socket!=null)
+            socket.close();
         this.finish();
     }
 
@@ -259,7 +336,31 @@ ipServidor=response.getAddress().toString();
        System.out.println("!!!Server received request: " + request);
         ConnectionResponse welcome = new ConnectionResponse(ip);
         System.out.println("Responding with: " + welcome);
-
+num_clientes++;
         return welcome;
     }
+
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                TextView txt_servidor = findViewById(R.id.servidor);
+                txt_servidor.setText(getString(R.string.clientes_asociados, num_clientes));
+            } finally {
+                // 100% guarantee that this always happens, even if
+                // your update method throws an exception
+                mHandler.postDelayed(mStatusChecker, mInterval);
+            }
+        }
+    };
+
+    void startRepeatingTask() {
+        mStatusChecker.run();
+    }
+
+    void stopRepeatingTask() {
+        if(mHandler!=null)
+        mHandler.removeCallbacks(mStatusChecker);
+    }
+
 }

@@ -29,6 +29,12 @@
     <string name="no">NO</string>
     <string name="modo_thread">Usar threads (desarrollo)</string>
     <string name="modo_tcp">Modo TCP (solo desarrollo)</string>
+    <string name="cliente">Establecer como Cliente. Click para buscar servidor.</string>
+    <string name="cliente_asociado">Cliente asociado correctamente al servidor</string>
+    <string name="cliente_no_asociado">Cliente no asociado al servidor. Vuelve a intentarlo o configura manualmente</string>
+    <string name="clientes_asociados">Servidor. Clientes asociados: %1$d</string>
+    <string name="servidor">Establecer como Servidor. Click para iniciarlo.</string>
+    <string name="opciones_avanzadas">Opciones de red avanzadas</string>
 
 
 </resources>

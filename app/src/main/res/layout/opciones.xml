@@ -47,16 +47,18 @@
             android:id="@+id/cliente"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cliente"
+            android:text="@string/cliente"
             android:onClick="checkButton"
-            android:checked="true"/>
+            android:checked="true"
+            android:tag="cliente"/>
 
         <RadioButton
             android:id="@+id/servidor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Servidor"
-            android:onClick="checkButton"/>
+            android:text="@string/servidor"
+            android:onClick="checkButton"
+            android:tag="servidor"/>
 
 
 
@@ -69,7 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Puerto"
-        android:layout_below="@+id/cliente_servidor"
+        android:layout_below="@+id/txt_ip"
         android:layout_marginTop="10dp"
         android:paddingRight="35dp"
 
@@ -84,7 +86,7 @@
         android:inputType="number"
         android:text="7001"
         android:layout_centerInParent="true"
-        android:layout_below="@+id/cliente_servidor"
+        android:layout_below="@+id/txt_ip"
         />
 
 
@@ -121,7 +123,7 @@
         android:layout_height="wrap_content"
         android:text="0º"
         android:textSize="20sp"
-        android:layout_below="@id/txt_ip_servidor"
+        android:layout_below="@id/opciones_avanzadas"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="15dp"
 
@@ -132,7 +134,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_usar_sensor_gravity"
-        android:layout_below="@id/txt_ip"
+        android:layout_below="@id/cliente_servidor"
         android:onClick="checkButton"/>
     <CheckBox
         android:id="@+id/checkBoxVibracion"
@@ -149,11 +151,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/version"
-        android:layout_below="@+id/checkBoxVibracion"
+        android:layout_below="@+id/ip_servidor"
         android:layout_marginTop="10dp"
         android:paddingRight="30dp"
 
         />
+    <CheckBox
+        android:id="@+id/opciones_avanzadas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/opciones_avanzadas"
+        android:layout_below="@id/checkBoxVibracion"
+        android:onClick="checkButton"/>
 
 
 </RelativeLayout>
