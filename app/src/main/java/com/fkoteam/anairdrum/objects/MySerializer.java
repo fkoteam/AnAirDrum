@@ -1,6 +1,7 @@
 package com.fkoteam.anairdrum.objects;
 
 import com.esotericsoftware.kryo.Kryo;
+
 import ru.maklas.mnet2.Supplier;
 import ru.maklas.mnet2.serialization.KryoSerializerProvider;
 

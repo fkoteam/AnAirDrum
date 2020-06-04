@@ -1,9 +1,7 @@
 package com.fkoteam.anairdrum;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Path;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,51 +9,24 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.Vibrator;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.fkoteam.anairdrum.objects.UpdateObject;
-
-
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
-import ru.maklas.mnet2.BroadcastProcessor;
-import ru.maklas.mnet2.BroadcastServlet;
-import ru.maklas.mnet2.Connection;
-import ru.maklas.mnet2.ServerAuthenticator;
-import ru.maklas.mnet2.ServerResponse;
-import ru.maklas.mnet2.ServerSocket;
-import ru.maklas.mnet2.Socket;
-import ru.maklas.mnet2.SocketImpl;
-import ru.maklas.mnet2.SocketProcessor;
-import ru.maklas.mnet2.serialization.KryoSerializer;
-import ru.maklas.mnet2.serialization.Serializer;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
-    float[] rMat = new float[9];
-
 
 
     SensorManager sensorManager;
@@ -67,54 +38,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static GestionarConexiones gestionarConexiones;
 
 
-
-
     Vibrator v;
     boolean arriba = true;
 
 
-    int compararDer = -1;
-    int compararIzq = -1;
     boolean sonandoA = false, sonandoB = false, sonandoC = false;
 
 
-    double fuerza;
     boolean haveSensor = false, haveGravity = false;
 
 
-    double min_z = 99;
-    double min_x = 99;
     // - 1  mano izq, 1 mano derecha
     double izq = 1;
-
-    int xx, yy, zz;
 
 
     TextView txt_progresoA, txt_progresoB, txt_progresoC;
     //sensibilidadA lado izquierdo, B centro, C lado derecho
     int min_value = 1, sensibilidadA = 1, sensibilidadB = 1, sensibilidadC = 1;
-    double primeroX, segundoX, terceroX, primeroZ, segundoZ, terceroZ;
     boolean started = false;
-    LayoutInflater layoutInflaterAndroid;
     SeekBar seekBarA, seekBarB, seekBarC;
-    private float[] mRotationVector = new float[5];
 
-    float[] gData = new float[3]; // accelerometer
-    float[] mData = new float[3]; // magnetometer
-    float[] iMat = new float[9];
-    float[] mGeomagnetic;
 
     SensorEventListener sensorEventListener;
-    int whipX = 0;
-    int whipY = 0;
-    int whipZ = 0;
-    private Sensor mRotationVectorSensor;
-    private Sensor mGravity;
-    private boolean mUseRotationVectorSensor = false;
-    private double mAzimuth;
-    AlertDialog alertDialogAndroid;
-    public static DataOutputStream out;
 
+    private Sensor mGravity;
 
 
     @Override
@@ -130,11 +77,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
         StrictMode.setThreadPolicy(policy);
-          /*  solo para log de la respuesta
-          BufferedReader in =
-                    new BufferedReader( new InputStreamReader( socket.getInputStream() ) );*/
-
-
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         radioGroup = findViewById(R.id.radioGroup);
@@ -145,19 +87,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 if (!Opciones.cliente || Opciones.offline)
                     mediaplayers.pie_der();
-                else
-                {
-                    /*if (Opciones.modo_tcp) {
-                            clienteTCP.enviar("6");
-                    }
-                    else
-                    {
-                        if (Opciones.modo_thread)
-                            //new Client(packet_pie_der).start();
-                            clienteUDP.enviar(packet_pie_der);
-                        else
-                            cl_pie_der.enviar();
-                    }*/
+                else {
                     gestionarConexiones.sendUnreliable(new EntityUpdate(6));
 
                 }
@@ -174,44 +104,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public boolean onTouch(View v, MotionEvent event) {
                 if (Opciones.offline) {
                     Toast.makeText(getApplicationContext(), R.string.pedal_offline, Toast.LENGTH_SHORT).show();
-                    mediaplayers.setPie_izq_pulsado(false);
+                    MediaPlayers.setPie_izq_pulsado(false);
                 } else {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        mediaplayers.setPie_izq_pulsado(true);
+                        MediaPlayers.setPie_izq_pulsado(true);
 
-                        if (Opciones.cliente)
-                        {
-                           /* if (Opciones.modo_tcp)
-                                clienteTCP.enviar("7");
-                            else {
-                                if (Opciones.modo_thread)
-                                    //new Client(packet_pie_izq_pulsado).start();
-                                    clienteUDP.enviar(packet_pie_izq_pulsado);
-                                else
-                                    cl_pie_izq_pulsado.enviar();
-                            }*/
-                            gestionarConexiones.sendUnreliable(new EntityUpdate(7)) ;// sends data unreliably and unordered.
+                        if (Opciones.cliente) {
+
+                            gestionarConexiones.sendUnreliable(new EntityUpdate(7));// sends data unreliably and unordered.
 
                         }
 
 
                     }
                     if (event.getAction() == MotionEvent.ACTION_UP) {
-                        mediaplayers.setPie_izq_pulsado(false);
+                        MediaPlayers.setPie_izq_pulsado(false);
                         if (!Opciones.cliente) {
                             mediaplayers.pie_izq();
-                        } else
-                        {
-                            /*if (Opciones.modo_tcp)
-                                clienteTCP.enviar("8");
-                            else {
-                                if (Opciones.modo_thread)
-                                    //new Client(packet_pie_izq_no_pulsado).start();
-                                    clienteUDP.enviar(packet_pie_izq_no_pulsado);
-                                else
-                                    cl_pie_izq_no_pulsado.enviar();
-                            }*/
-                            gestionarConexiones.sendUnreliable(new EntityUpdate(8)) ;// sends data unreliably and unordered.
+                        } else {
+
+                            gestionarConexiones.sendUnreliable(new EntityUpdate(8));// sends data unreliably and unordered.
 
 
                         }
@@ -353,20 +265,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void izq1() {
         if (!Opciones.cliente || Opciones.offline) {
             mediaplayers.izq1();
-        } else
-        {
-            /*if (Opciones.modo_tcp)
-                clienteTCP.enviar("4");
-            else
-            {
-                if (Opciones.modo_thread)
+        } else {
 
-                    //new Client(packet_izq1).start();
-                    clienteUDP.enviar(packet_izq1);
-                else
-                    cl_izq1.enviar();
-            }*/
-            gestionarConexiones.sendUnreliable(new EntityUpdate(4)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(4));// sends data unreliably and unordered.
 
         }
 
@@ -376,19 +277,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void izq2() {
         if (!Opciones.cliente || Opciones.offline) {
             mediaplayers.izq2();
-        } else
-        {
-            /*if (Opciones.modo_tcp)
-                clienteTCP.enviar("5");
-            else
-            {
-                if (Opciones.modo_thread)
-                    //new Client(packet_izq2).start();
-                    clienteUDP.enviar(packet_izq2);
-                else
-                    cl_izq2.enviar();
-            }*/
-            gestionarConexiones.sendUnreliable(new EntityUpdate(5)) ;// sends data unreliably and unordered.
+        } else {
+
+            gestionarConexiones.sendUnreliable(new EntityUpdate(5));// sends data unreliably and unordered.
 
         }
 
@@ -397,22 +288,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void der1() {
         if (!Opciones.cliente || Opciones.offline) {
-            if (mediaplayers.isPie_izq_pulsado())
+            if (MediaPlayers.isPie_izq_pulsado())
                 mediaplayers.der1_op();
             else
                 mediaplayers.der1_cl();
 
         } else {
-            /*if (Opciones.modo_tcp)
-                clienteTCP.enviar("2");
-            else
-            {
-                if (Opciones.modo_thread)
-                    clienteUDP.enviar(packet_der1op);
-                else
-                    cl_der1op.enviar();
-            }*/
-            gestionarConexiones.sendUnreliable(new EntityUpdate(2)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(2));// sends data unreliably and unordered.
 
         }
 
@@ -423,20 +305,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (!Opciones.cliente || Opciones.offline) {
             mediaplayers.der2();
 
-        } else
-        {
-            /*if (Opciones.modo_tcp)
-                clienteTCP.enviar("3");
-            else
-            {
-                if (Opciones.modo_thread)
-                    clienteUDP.enviar(packet_der2);
-
-
-                else
-                    cl_der2.enviar();
-            }*/
-            gestionarConexiones.sendUnreliable(new EntityUpdate(3)) ;// sends data unreliably and unordered.
+        } else {
+            gestionarConexiones.sendUnreliable(new EntityUpdate(3));// sends data unreliably and unordered.
 
         }
 
@@ -445,20 +315,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void der3() {
         if (!Opciones.cliente || Opciones.offline) {
-                mediaplayers.der3();
+            mediaplayers.der3();
 
 
         } else {
-            /*if (Opciones.modo_tcp)
-                clienteTCP.enviar("9");
-            else
-            {
-                if (Opciones.modo_thread)
-                    clienteUDP.enviar(packet_der3);
-                else
-                    cl_der3.enviar();
-            }*/
-            gestionarConexiones.sendUnreliable(new EntityUpdate(9)) ;// sends data unreliably and unordered.
+            gestionarConexiones.sendUnreliable(new EntityUpdate(9));// sends data unreliably and unordered.
 
         }
 
@@ -469,19 +330,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (!Opciones.cliente || Opciones.offline) {
             mediaplayers.izq3();
 
-        } else
-        {
-            /*if (Opciones.modo_tcp)
-                clienteTCP.enviar("0");
-            else
-            {
-                if (Opciones.modo_thread)
-                    //asi se hacia antes: new Client(packet_izq3).start();
-                    clienteUDP.enviar(packet_izq3);
-                else
-                    cl_izq3.enviar();
-            }*/
-            gestionarConexiones.sendUnreliable(new EntityUpdate(0)) ;// sends data unreliably and unordered.
+        } else {
+            gestionarConexiones.sendUnreliable(new EntityUpdate(0));// sends data unreliably and unordered.
 
         }
 
@@ -525,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         stop();
         super.onPause();
 
-gestionarConexiones.stop();
+        gestionarConexiones.stop();
 
     }
 
@@ -573,15 +423,12 @@ gestionarConexiones.stop();
 
         //calculaNumeros();
         try {
-            if(!Opciones.cliente && !Opciones.offline)
-            {
+            if (!Opciones.cliente && !Opciones.offline) {
                 gestionarConexiones.inicializaServidor();
             }
-            if(Opciones.cliente && !Opciones.offline)
-            {
+            if (Opciones.cliente && !Opciones.offline) {
                 gestionarConexiones.inicializaCliente();
             }
-
 
 
         } catch (IOException e) {
@@ -735,20 +582,13 @@ gestionarConexiones.stop();
 
 
         } else if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
-            if (event.values[2] > 0) arriba = true;
-            else arriba = false;
+            arriba = event.values[2] > 0;
 
 
         }
 
 
     }
-
-
-
-
-
-
 
 
 }

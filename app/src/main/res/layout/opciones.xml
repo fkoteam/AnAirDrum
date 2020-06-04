@@ -122,7 +122,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0º"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_below="@id/opciones_avanzadas"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="15dp"

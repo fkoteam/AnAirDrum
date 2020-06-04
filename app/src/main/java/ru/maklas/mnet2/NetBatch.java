@@ -1,6 +1,7 @@
 package ru.maklas.mnet2;
 
 import com.badlogic.gdx.utils.Array;
+
 import ru.maklas.mnet2.serialization.Serializer;
 
 /**

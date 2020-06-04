@@ -20,6 +20,6 @@ public enum ResponseType {
     /**
      * Check state of socket. Looks like you were already connected/connecting or socket was closed.
      */
-    WRONG_STATE;
+    WRONG_STATE
 
 }

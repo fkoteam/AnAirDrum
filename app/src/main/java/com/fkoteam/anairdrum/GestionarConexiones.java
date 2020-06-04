@@ -37,7 +37,12 @@ public class GestionarConexiones implements ServerAuthenticator , BroadcastProce
         return gestionarConexiones;
     }
 
-    public static void sendUnreliable(EntityUpdate entityUpdate) {
+    public void sendUnreliable(EntityUpdate entityUpdate)  {
+        try {
+            inicializaCliente();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         client.sendUnreliable(entityUpdate);
     }
 

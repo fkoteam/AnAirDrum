@@ -2,12 +2,13 @@ package ru.maklas.mnet2;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.AtomicQueue;
-import ru.maklas.mnet2.serialization.Serializer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
+
+import ru.maklas.mnet2.serialization.Serializer;
 
 /**
  * Job of a server socket is to accept new connections and handle subsockets.

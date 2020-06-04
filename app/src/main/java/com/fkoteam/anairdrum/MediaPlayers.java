@@ -1,18 +1,14 @@
 package com.fkoteam.anairdrum;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class MediaPlayers {
+class MediaPlayers {
     private Context mContext;
+
 
 
     private static boolean  pie_izq_pulsado = false;
@@ -48,26 +44,26 @@ public class MediaPlayers {
 
     }
 
-    public void pie_der() {
+    void pie_der() {
         soundpool.play(pie_der, 1f, 1f, 1, 0, 1f);
     }
 
-    public void izq1() {
+    void izq1() {
         soundpool.play(izq1, 1f, 1f, 1, 0, 1f);
 
     }
 
-    public void izq2() {
+    void izq2() {
         soundpool.play(izq2, 1f, 1f, 1, 0, 1f);
     }
-    public void izq3() {
+    void izq3() {
         soundpool.play(izq3, 1f, 1f, 1, 0, 1f);
     }
-    public void der3() {
+    void der3() {
         soundpool.play(der3, 1f, 1f, 1, 0, 1f);
     }
 
-    public void pie_izq() {
+    void pie_izq() {
 
         soundpool.play(pie_izq_cer, 1f, 1f, 1, 0, 1f);
         for(Integer i : list_der1op) {
@@ -79,7 +75,7 @@ public class MediaPlayers {
     }
 
 
-    public void der1_op() {
+    void der1_op() {
         if(pie_izq_pulsado) {
             Integer i=new Integer(soundpool.play(der1op, 1f, 1f, 1, 0, 1f));
             list_der1op.add(i);
@@ -93,7 +89,7 @@ public class MediaPlayers {
 
     }
 
-    public void der1_cl() {
+    void der1_cl() {
 
         soundpool.play(der1cl, 1f, 1f, 1, 0, 1f);
 
@@ -102,7 +98,7 @@ public class MediaPlayers {
     }
 
 
-    public void der2(){
+    void der2(){
 
         soundpool.play(der2, 1f, 1f, 1, 0, 1f);
 
@@ -111,11 +107,11 @@ public class MediaPlayers {
     }
 
 
-    public static boolean isPie_izq_pulsado() {
+    static boolean isPie_izq_pulsado() {
         return pie_izq_pulsado;
     }
 
-    public static void setPie_izq_pulsado(boolean pie_izq_pulsado) {
+    static void setPie_izq_pulsado(boolean pie_izq_pulsado) {
         MediaPlayers.pie_izq_pulsado = pie_izq_pulsado;
     }
 

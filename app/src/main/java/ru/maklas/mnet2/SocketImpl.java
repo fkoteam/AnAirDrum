@@ -3,9 +3,6 @@ package ru.maklas.mnet2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.AtomicQueue;
 import com.badlogic.gdx.utils.ObjectMap;
-import ru.maklas.mnet2.congestion.CongestionManager;
-import ru.maklas.mnet2.congestion.DefaultCongestionManager;
-import ru.maklas.mnet2.serialization.Serializer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -15,7 +12,27 @@ import java.net.SocketException;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static ru.maklas.mnet2.PacketType.*;
+import ru.maklas.mnet2.congestion.CongestionManager;
+import ru.maklas.mnet2.congestion.DefaultCongestionManager;
+import ru.maklas.mnet2.serialization.Serializer;
+
+import static ru.maklas.mnet2.PacketType.batch;
+import static ru.maklas.mnet2.PacketType.batchUnreliable;
+import static ru.maklas.mnet2.PacketType.bigRequest;
+import static ru.maklas.mnet2.PacketType.build5byte;
+import static ru.maklas.mnet2.PacketType.buildSafeBatch;
+import static ru.maklas.mnet2.PacketType.buildSafeBatchUnreliable;
+import static ru.maklas.mnet2.PacketType.connectionRequest;
+import static ru.maklas.mnet2.PacketType.connectionResponseError;
+import static ru.maklas.mnet2.PacketType.connectionResponseOk;
+import static ru.maklas.mnet2.PacketType.disconnect;
+import static ru.maklas.mnet2.PacketType.extractLong;
+import static ru.maklas.mnet2.PacketType.extractShort;
+import static ru.maklas.mnet2.PacketType.pingRequest;
+import static ru.maklas.mnet2.PacketType.pingResponse;
+import static ru.maklas.mnet2.PacketType.reliableAck;
+import static ru.maklas.mnet2.PacketType.reliableRequest;
+import static ru.maklas.mnet2.PacketType.unreliable;
 
 public class SocketImpl implements Socket{
 

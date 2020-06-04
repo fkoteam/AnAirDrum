@@ -1,14 +1,11 @@
 package com.fkoteam.anairdrum;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -16,20 +13,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import ru.maklas.mnet2.BroadcastProcessor;
-import ru.maklas.mnet2.BroadcastReceiver;
-import ru.maklas.mnet2.BroadcastResponse;
-import ru.maklas.mnet2.BroadcastServlet;
-import ru.maklas.mnet2.BroadcastSocket;
 
 public class Opciones extends AppCompatActivity {
     public static boolean offline = true;
@@ -80,7 +71,7 @@ public class Opciones extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
                 if (s == null || s.toString().length() == 0) {
-                    puertoEdit.setText("7001");
+                    puertoEdit.setText(R.string.default_port);
                     puerto = 7001;
                 } else
                     puerto = Integer.parseInt(s.toString());
@@ -104,7 +95,7 @@ public class Opciones extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
                 if (s == null || s.toString().length() == 0) {
-                    ipServidorEdit.setText("192.168.1.");
+                    ipServidorEdit.setText(R.string.deault_ip);
                     ipServidor = "192.168.1.1";
                 } else
                     ipServidor = s.toString();
@@ -165,7 +156,7 @@ public class Opciones extends AppCompatActivity {
             TextView txt_servidor = findViewById(R.id.servidor);
             txt_servidor.setText(getString(R.string.servidor));
             gestionarConexiones.creaBroadCastCliente();
-            Toast.makeText(getApplicationContext(), "Buscando...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.buscando, Toast.LENGTH_SHORT).show();
             receivedResponse.set(false);
 
 
@@ -178,7 +169,7 @@ public class Opciones extends AppCompatActivity {
                 public void run(){
                     // do something
                     if(receivedResponse.get()) {
-                        Toast.makeText(getApplicationContext(), "Servidor encontrado.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.server_found, Toast.LENGTH_SHORT).show();
 
 
                         ipServidorEdit.setText(ipServidor);
@@ -189,7 +180,7 @@ public class Opciones extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(getApplicationContext(), "Servidor no encontrado. Vuelve a intentar o configua manualmente.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.server_not_found, Toast.LENGTH_SHORT).show();
                         TextView txt_cliente = findViewById(R.id.cliente);
                         txt_cliente.setText(getString(R.string.cliente_no_asociado));
                     }
@@ -206,7 +197,7 @@ public class Opciones extends AppCompatActivity {
             gestionarConexiones.creaBroadCastServidor();
 
 
-            Toast.makeText(getApplicationContext(), "Escuchando...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.escuchando, Toast.LENGTH_SHORT).show();
 
             mHandler = new Handler();
             startRepeatingTask();
@@ -268,6 +259,7 @@ public class Opciones extends AppCompatActivity {
         }
         else
         {
+            findViewById(R.id.opciones_avanzadas).setVisibility(View.VISIBLE);
             findViewById(R.id.cliente).setVisibility(View.VISIBLE);
             findViewById(R.id.servidor).setVisibility(View.VISIBLE);
             if(opciones_avanzadas.isChecked()) {
@@ -280,6 +272,8 @@ public class Opciones extends AppCompatActivity {
                     findViewById(R.id.ip_servidor).setVisibility(View.GONE);
                     findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
                 }
+                findViewById(R.id.txt_ip).setVisibility(View.VISIBLE);
+
             }
             else
             {

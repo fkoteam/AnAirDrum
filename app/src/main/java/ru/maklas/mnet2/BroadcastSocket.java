@@ -1,7 +1,6 @@
 package ru.maklas.mnet2;
 
 import com.badlogic.gdx.utils.Array;
-import ru.maklas.mnet2.serialization.Serializer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,6 +8,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import ru.maklas.mnet2.serialization.Serializer;
 
 public class BroadcastSocket {
 

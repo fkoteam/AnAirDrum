@@ -2,6 +2,9 @@ package com.fkoteam.anairdrum;
 
 
 import com.badlogic.gdx.utils.Array;
+import com.fkoteam.anairdrum.objects.MySerializer;
+
+import java.net.SocketException;
 
 import ru.maklas.mnet2.BroadcastServlet;
 import ru.maklas.mnet2.HighPingUDPSocket;
@@ -14,9 +17,6 @@ import ru.maklas.mnet2.SocketProcessor;
 import ru.maklas.mnet2.Supplier;
 import ru.maklas.mnet2.UDPSocket;
 import ru.maklas.mnet2.serialization.Serializer;
-import com.fkoteam.anairdrum.objects.*;
-import java.net.SocketException;
-import java.util.Random;
 
 public class TestUtils {
 
@@ -60,12 +60,12 @@ public class TestUtils {
                     MainActivity.mediaplayers.der2();
 
                 } else if (((EntityUpdate)o).getId()==7) {
-                    MainActivity.mediaplayers.setPie_izq_pulsado(true);
+                    MediaPlayers.setPie_izq_pulsado(true);
                     //pie_izq_pulsado
 
 
                 } else if (((EntityUpdate)o).getId()==8) {
-                    MainActivity.mediaplayers.setPie_izq_pulsado(false);
+                    MediaPlayers.setPie_izq_pulsado(false);
                     MainActivity.mediaplayers.pie_izq();
                     //pie_izq_no_pulsado
 

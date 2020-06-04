@@ -1,6 +1,7 @@
 package ru.maklas.mnet2.congestion;
 
 import com.badlogic.gdx.utils.LongArray;
+
 import ru.maklas.mnet2.SocketImpl;
 
 public class DefaultCongestionManager implements CongestionManager {

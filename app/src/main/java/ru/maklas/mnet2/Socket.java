@@ -1,10 +1,10 @@
 package ru.maklas.mnet2;
 
-import ru.maklas.mnet2.congestion.CongestionManager;
-import ru.maklas.mnet2.serialization.Serializer;
-
 import java.io.IOException;
 import java.net.InetAddress;
+
+import ru.maklas.mnet2.congestion.CongestionManager;
+import ru.maklas.mnet2.serialization.Serializer;
 
 public interface Socket {
 

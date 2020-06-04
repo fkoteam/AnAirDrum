@@ -35,6 +35,12 @@
     <string name="clientes_asociados">Servidor. Clientes asociados: %1$d</string>
     <string name="servidor">Establecer como Servidor. Click para iniciarlo.</string>
     <string name="opciones_avanzadas">Opciones de red avanzadas</string>
+    <string name="default_port">7001</string>
+    <string name="deault_ip">192.168.1.1</string>
+    <string name="buscando">Buscando...</string>
+    <string name="server_found">Servidor encontrado.</string>
+    <string name="server_not_found">Servidor no encontrado. Vuelve a intentar o configua manualmente.</string>
+    <string name="escuchando">Escuchando...</string>
 
 
 </resources>

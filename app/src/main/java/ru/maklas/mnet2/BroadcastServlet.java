@@ -1,7 +1,6 @@
 package ru.maklas.mnet2;
 
 import com.badlogic.gdx.utils.AtomicQueue;
-import ru.maklas.mnet2.serialization.Serializer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,6 +8,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import ru.maklas.mnet2.serialization.Serializer;
 
 public class BroadcastServlet {
 
