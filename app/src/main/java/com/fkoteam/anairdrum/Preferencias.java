@@ -15,9 +15,17 @@ class Preferencias {
     static final String SENSIBILIDADC = "SENSIBILIDADC";
     static final String NO_GRAVITY = "NO_GRAVITY";
     static final String NO_VIBRACION = "NO_VIBRACION";
+    private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 
 
-
+    public static void setFirstTimeLaunch(boolean isFirstTime) {
+        SharedPreferences.Editor prefsEditor = mSharedPref.edit();
+        prefsEditor.putBoolean(IS_FIRST_TIME_LAUNCH, isFirstTime);
+        prefsEditor.commit();
+    }
+    public static boolean isFirstTimeLaunch() {
+        return mSharedPref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
+    }
 
     private static SharedPreferences mSharedPref;
 
