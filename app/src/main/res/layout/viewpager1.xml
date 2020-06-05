@@ -9,10 +9,11 @@
         android:layout_centerInParent="true"
         android:gravity="center_horizontal"
         android:orientation="vertical">
-        <ImageView
-            android:layout_width="@dimen/img_width_height"
-            android:layout_height="@dimen/img_width_height"
-            android:src="@drawable/ic_launcher_background" />
+
+        <VideoView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/video1"></VideoView>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,3 +34,4 @@
             android:gravity="center_horizontal" />
     </LinearLayout>
 </RelativeLayout>
+
