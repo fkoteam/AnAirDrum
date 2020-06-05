@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">An Air Drum</string>
-    <string name="version">Version 1.0</string>
+    <string name="version">Version 1.0 (be patient!)</string>
 
-    <string name="pedal_offline">El pedal izquierdo solo puede usarse en modo online</string>
+    <string name="pedal_offline">Hit hat pedal is disabled in offline mode</string>
     <string name="ip_de_dispositivo">Your Ip address: %1$s</string>
     <string name="no_wifi">No wifi</string>
     <string name="opciones">Options</string>
@@ -20,7 +20,7 @@
     <string name="centro">center</string>
     <string name="derecha">right side</string>
     <string name="no_usar_sensor_gravity">Disable gravity sensor</string>
-    <string name="no_vibra">Vibration disabled</string>
+    <string name="no_vibra">Disable vibration</string>
     <string name="usando_gravedad">Gravity sensor enabled.</string>
     <string name="no_usando_gravedad">Gravity sensor disabled.</string>
 
@@ -45,15 +45,14 @@
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
-    <string name="slide_1_title">Hello Food!</string>
-    <string name="slide_1_desc">The easiest way to order food from your favourite restaurant!</string>
-    <string name="slide_2_title">Movie Tickets</string>
-    <string name="slide_2_desc">Book movie tickets for your family and friends!</string>
-    <string name="slide_3_title">Great Discounts</string>
-    <string name="slide_3_desc">Best discounts on every single service we offer!</string>
-    <string name="slide_4_title">World Travel</string>
-    <string name="slide_4_desc">Book tickets of any transportation and travel the world!</string>
-    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
-    <string name="play_again">Play Again</string>
+    <string name="slide_1_title">3 sounds in each hand!</string>
+    <string name="slide_1_desc">You can play 3 different sounds in each hand!</string>
+    <string name="slide_2_title">Adjustable</string>
+    <string name="slide_2_desc">Use the sliders to adjust the hit sensibility</string>
+    <string name="slide_3_title">Connect different devices</string>
+    <string name="slide_3_desc">Use up to 4 devices (two hands and two pedals). You can connect it wirelessly</string>
+    <string name="slide_4_title">Amplify it</string>
+    <string name="slide_4_desc">In online mode, you can connect the server device to an amplifier via cable or bluetooth</string>
+    <string name="play_again">Play Again Splash Screen</string>
 
 </resources>

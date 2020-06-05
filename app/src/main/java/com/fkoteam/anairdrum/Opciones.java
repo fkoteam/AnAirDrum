@@ -1,5 +1,6 @@
 package com.fkoteam.anairdrum;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -107,6 +108,20 @@ public class Opciones extends AppCompatActivity {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+        findViewById(R.id.btn_play_again).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // We normally won't show the intro slider again in real app
+                // but this is for testing
+
+                // make first time launch TRUE
+                Preferencias.setFirstTimeLaunch(true);
+
+                startActivity(new Intent(Opciones.this, WelcomeActivity.class));
+                finish();
             }
         });
 
@@ -255,6 +270,8 @@ public class Opciones extends AppCompatActivity {
             findViewById(R.id.ip_servidor).setVisibility(View.GONE);
             findViewById(R.id.txt_ip_servidor).setVisibility(View.GONE);
             findViewById(R.id.opciones_avanzadas).setVisibility(View.GONE);
+            findViewById(R.id.txt_ip).setVisibility(View.GONE);
+
 
         }
         else

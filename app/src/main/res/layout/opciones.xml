@@ -146,12 +146,21 @@
 
 
 
+
+    <Button
+        android:id="@+id/btn_play_again"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/play_again"
+        android:layout_below="@+id/ip_servidor"
+        />
     <TextView
         android:id="@+id/txt_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/version"
-        android:layout_below="@+id/ip_servidor"
+        android:layout_below="@+id/btn_play_again"
         android:layout_marginTop="10dp"
         android:paddingRight="30dp"
 

@@ -13,22 +13,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WelcomeActivity">
+        <activity android:name=".WelcomeActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
         </activity>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:theme="@style/AppThemeMain">
 
         </activity>
         <activity
             android:name=".Opciones"
-            android:label="Opciones"
-            android:parentActivityName=".MainActivity" />
+            android:label="@string/opciones"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppThemeMain"/>
     </application>
 
 </manifest>
