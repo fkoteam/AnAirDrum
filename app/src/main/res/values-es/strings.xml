@@ -2,14 +2,14 @@
     <string name="app_name">An Air Drum</string>
     <string name="version">Versión 1.1 (paciencia!)</string>
 
-    <string name="pedal_offline">El pedal hit hat solo puede usarse si estás conectado con otros dispositivos</string>
+    <string name="pedal_offline">El pedal hi-hat solo puede usarse si estás conectado con otros dispositivos</string>
     <string name="ip_de_dispositivo">Ip de este dispositivo: %1$s</string>
     <string name="no_wifi">No wifi</string>
     <string name="opciones">Opciones</string>
     <string name="mano_derecha">Mano derecha</string>
     <string name="mano_izquierda">Mano izquierda</string>
     <string name="pedal_derecho">Bombo</string>
-    <string name="pedal_izquierdo">Pedal hit hat</string>
+    <string name="pedal_izquierdo">Pedal hi-hat</string>
     <string name="volver">Volver</string>
     <string name="titulo_sensibilidad">Ajuste %1$s: %2$d</string>
     <string name="calibrar">calibrar</string>

@@ -2,14 +2,14 @@
     <string name="app_name">An Air Drum</string>
     <string name="version">Version 1.1 (be patient!)</string>
 
-    <string name="pedal_offline">Hit hat pedal is disabled if you\'re not connected to other devices</string>
+    <string name="pedal_offline">Hi-hat pedal is disabled if you\'re not connected to other devices</string>
     <string name="ip_de_dispositivo">Your Ip address: %1$s</string>
     <string name="no_wifi">No wifi</string>
     <string name="opciones">Settings</string>
     <string name="mano_derecha">Right hand</string>
     <string name="mano_izquierda">Left hand</string>
     <string name="pedal_derecho">Bass drum pedal</string>
-    <string name="pedal_izquierdo">Hit hat pedal</string>
+    <string name="pedal_izquierdo">Hi-hat pedal</string>
     <string name="volver">Back</string>
     <string name="titulo_sensibilidad">%1$s adjustment: %2$d</string>
     <string name="calibrar">calibrate</string>
