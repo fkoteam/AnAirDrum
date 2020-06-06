@@ -50,14 +50,14 @@
     <string name="next">SIGUIENTE</string>
     <string name="skip">SALTAR</string>
     <string name="start">VAMOS ALLÁ</string>
-    <string name="slide_1_title">¡3 sonidos con cada mano!</string>
-    <string name="slide_1_desc">Puedes tocar 3 sonidos diferentes con cada mano</string>
+    <string name="slide_1_title">¡3 gestos con cada mano!</string>
+    <string name="slide_1_desc">Puedes realizar 3 gestos diferentes con cada mano</string>
     <string name="slide_2_title">Ajustable</string>
     <string name="slide_2_desc">Utiliza el control deslizante para ajustar la sensibilidad del golpe</string>
     <string name="slide_3_title">Conecta los dispositivos</string>
     <string name="slide_3_desc">Utiliza hasta 4 dispositivos (dos manos y dos pedales). Puedes enlazarlos mediante tu red wifi</string>
     <string name="slide_4_title">Amplifica</string>
-    <string name="slide_4_desc">Si tienes los dispositivos enlazados, puedes conectar el dispositivo servidor a un amplificador por cable o bluetooth</string>
+    <string name="slide_4_desc">Si tienes los dispositivos enlazados por wifi, puedes conectar el dispositivo servidor a un amplificador por cable o bluetooth</string>
     <string name="play_again">Volver a ver introducción</string>
     <string name="offline">Offline</string>
     <string name="online">Enlaza dispositivos</string>
