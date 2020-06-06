@@ -32,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private TextView[] dots;
     private int[] layouts;
     private Button btnSkip, btnNext;
-    private VideoView simpleVideoView;
+    private VideoView simpleVideoView1,simpleVideoView2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,16 +124,29 @@ public class WelcomeActivity extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
             addBottomDots(position);
+            stopAll();
             if(position==0) {
-                simpleVideoView = (VideoView) findViewById(R.id.video1);
-                simpleVideoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video1));
-                simpleVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                simpleVideoView1 = (VideoView) findViewById(R.id.video1);
+                simpleVideoView1.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video1));
+                simpleVideoView1.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     public void onPrepared(MediaPlayer mp) {
                         mp.setLooping(true);
-                        simpleVideoView.start();
+                        simpleVideoView1.start();
                     }
                 });
             }
+
+            if(position==1) {
+                simpleVideoView2 = (VideoView) findViewById(R.id.video2);
+                simpleVideoView2.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video2));
+                simpleVideoView2.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.setLooping(true);
+                        simpleVideoView2.start();
+                    }
+                });
+            }
+
             // changing the next button text 'NEXT' / 'GOT IT'
             if (position == layouts.length - 1) {
                 // last page. make button text to GOT IT
@@ -154,6 +167,14 @@ public class WelcomeActivity extends AppCompatActivity {
         public void onPageScrollStateChanged(int arg0) {
         }
     };
+
+    private void stopAll() {
+        if( simpleVideoView1!=null)
+            simpleVideoView1.stopPlayback();
+        if( simpleVideoView2!=null)
+            simpleVideoView2.stopPlayback();
+    }
+
     /**
      * Making notification bar transparent
      */
@@ -177,20 +198,21 @@ public class WelcomeActivity extends AppCompatActivity {
             View view = layoutInflater.inflate(layouts[position], container, false);
             container.addView(view);
             if(position==0) {
-                simpleVideoView = (VideoView) findViewById(R.id.video1);
-                simpleVideoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video1));
-                simpleVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                simpleVideoView1 = (VideoView) findViewById(R.id.video1);
+                simpleVideoView1.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video1));
+                simpleVideoView1.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     public void onPrepared(MediaPlayer mp) {
                         mp.setLooping(true);
-                        simpleVideoView.start();
+                        simpleVideoView1.start();
                     }
                 });
             }
             else
             {
-                if( simpleVideoView!=null)
-                    simpleVideoView.stopPlayback();
+                if( simpleVideoView1!=null)
+                    simpleVideoView1.stopPlayback();
             }
+
             return view;
         }
         @Override
@@ -211,7 +233,6 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if( simpleVideoView!=null)
-            simpleVideoView.stopPlayback();
+        stopAll();
     }
 }

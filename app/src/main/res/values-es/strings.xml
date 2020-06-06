@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">An Air Drum</string>
-    <string name="version">Versión 1.0 (paciencia!)</string>
+    <string name="version">Versión 1.1 (paciencia!)</string>
 
-    <string name="pedal_offline">El pedal izquierdo solo puede usarse en modo online</string>
+    <string name="pedal_offline">El pedal hit hat solo puede usarse si estás conectado con otros dispositivos</string>
     <string name="ip_de_dispositivo">Ip de este dispositivo: %1$s</string>
     <string name="no_wifi">No wifi</string>
     <string name="opciones">Opciones</string>
@@ -55,10 +55,11 @@
     <string name="slide_2_title">Ajustable</string>
     <string name="slide_2_desc">Utiliza el control deslizante para ajustar la sensibilidad del golpe</string>
     <string name="slide_3_title">Conecta los dispositivos</string>
-    <string name="slide_3_desc">Utiliza hasta 4 dispositivos (dos manos y dos pedales). Puedes conectarlos de forma inhalámbrica</string>
+    <string name="slide_3_desc">Utiliza hasta 4 dispositivos (dos manos y dos pedales). Puedes enlazarlos mediante tu red wifi</string>
     <string name="slide_4_title">Amplifica</string>
-    <string name="slide_4_desc">En el modo online, conecta el dispositivo servidor a un amplificador por cable o bluetooth</string>
+    <string name="slide_4_desc">Si tienes los dispositivos enlazados, puedes conectar el dispositivo servidor a un amplificador por cable o bluetooth</string>
     <string name="play_again">Volver a ver introducción</string>
-
+    <string name="offline">Offline</string>
+    <string name="online">Enlaza dispositivos</string>
 
 </resources>

@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">An Air Drum</string>
-    <string name="version">Version 1.0 (be patient!)</string>
+    <string name="version">Version 1.1 (be patient!)</string>
 
-    <string name="pedal_offline">Hit hat pedal is disabled in offline mode</string>
+    <string name="pedal_offline">Hit hat pedal is disabled if you\'re not connected to other devices</string>
     <string name="ip_de_dispositivo">Your Ip address: %1$s</string>
     <string name="no_wifi">No wifi</string>
-    <string name="opciones">Options</string>
+    <string name="opciones">Settings</string>
     <string name="mano_derecha">Right hand</string>
     <string name="mano_izquierda">Left hand</string>
     <string name="pedal_derecho">Bass drum pedal</string>
@@ -32,7 +32,7 @@
     <string name="cliente_no_asociado">Client is not associated to a server. Try again or configure manually</string>
     <string name="clientes_asociados">Server. Connected clients: %1$d</string>
     <string name="servidor">Mark as server. Click to inicializate.</string>
-    <string name="opciones_avanzadas">Advanced net options</string>
+    <string name="opciones_avanzadas">Advanced net settings</string>
     <string name="default_port">7001</string>
     <string name="deault_ip">192.168.1.1</string>
     <string name="buscando">Searching...</string>
@@ -45,14 +45,16 @@
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
-    <string name="slide_1_title">3 sounds in each hand!</string>
-    <string name="slide_1_desc">You can play 3 different sounds in each hand!</string>
+    <string name="slide_1_title">3 gestures in each hand!</string>
+    <string name="slide_1_desc">In each hand you have 3 gestures with different sounds</string>
     <string name="slide_2_title">Adjustable</string>
     <string name="slide_2_desc">Use the sliders to adjust the hit sensibility</string>
     <string name="slide_3_title">Connect different devices</string>
-    <string name="slide_3_desc">Use up to 4 devices (two hands and two pedals). You can connect it wirelessly</string>
+    <string name="slide_3_desc">Use up to 4 devices (two hands and two pedals). You can link them through your wifi connection</string>
     <string name="slide_4_title">Amplify it</string>
-    <string name="slide_4_desc">In online mode, you can connect the server device to an amplifier via cable or bluetooth</string>
+    <string name="slide_4_desc">In linked mode, you can connect the server device to an amplifier via cable or bluetooth</string>
     <string name="play_again">Play Again Splash Screen</string>
+    <string name="offline">Offline</string>
+    <string name="online">Link devices</string>
 
 </resources>
