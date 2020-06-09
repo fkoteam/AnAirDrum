@@ -15,7 +15,8 @@
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_x"
         android:textSize="15sp"
-        android:layout_above="@id/seekBarA"/>
+        android:layout_below="@id/radioGroup"
+        android:paddingTop="50dp"/>
     <TextView
         android:id="@+id/txt_progresoB"
         android:layout_width="wrap_content"
@@ -24,7 +25,7 @@
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_y"
         android:textSize="15sp"
-        android:layout_above="@id/seekBarB"/>
+        android:layout_below="@id/seekBarA"/>
     <TextView
         android:id="@+id/txt_progresoC"
         android:layout_width="wrap_content"
@@ -33,13 +34,12 @@
         android:layout_marginTop="24dp"
         android:text="@string/sensibilidad_inicial_z"
         android:textSize="15sp"
-        android:layout_above="@id/seekBarC"/>
+        android:layout_below="@id/seekBarB"/>
     <TextView
         android:id="@+id/txt_mAzimuth"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="dsgsdgsdfgsdf sdgsdfgsdf sdfgsd fgs fgsfs sfgsdfg sdf sdfg sertert wrt wet wert rt "
         android:textSize="15sp"
         android:layout_margin="5dp"
         android:layout_centerHorizontal="true"
@@ -52,7 +52,8 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:id="@+id/radioGroup"
-        android:layout_above="@id/txt_progresoA"
+        android:layout_below="@id/txt_mAzimuth"
+        android:paddingTop="100dp"
         >
 
         <RadioButton
@@ -95,14 +96,14 @@
         android:layout_centerVertical="true"
         android:max="29"
         android:progress="0"
-        android:layout_above="@id/txt_progresoB"/>
+        android:layout_below="@id/txt_progresoA"/>
     <SeekBar
         android:id="@+id/seekBarB"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_above="@id/txt_progresoC"
+        android:layout_below="@id/txt_progresoB"
 
     android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
@@ -115,10 +116,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-android:layout_alignParentBottom="true"
         android:max="29"
-android:layout_marginBottom="100dp"
-        android:progress="0" />
+        android:progress="0"
+        android:layout_below="@id/txt_progresoC"
+        />
 
     <Button
         android:id="@+id/pedal_der"
